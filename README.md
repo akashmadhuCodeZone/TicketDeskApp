@@ -205,8 +205,6 @@ This project is licensed under the MIT License.
 
  Contact
 
-For further queries, please contact [your-email@example.com].
+For further queries, please contact akashmadhu824@gmail.com.
 
----
 
-This README file provides a comprehensive guide to setting up and running the Ticketing Application. Feel free to modify any sections to better fit your project's specifics.
