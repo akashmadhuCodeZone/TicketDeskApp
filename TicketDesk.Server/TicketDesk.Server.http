@@ -1,0 +1,48 @@
+@TicketDesk.Server_HostAddress = http://localhost:5056
+
+# GET request to the weather forecast endpoint
+GET {{TicketDesk.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+# POST request to create a new ticket
+POST {{TicketDesk.Server_HostAddress}}/api/ticket
+Content-Type: application/json
+
+{
+  "TicketTypeId": 1,
+  "DepartmentId": 2,
+  "TicketTitle": "Sample Ticket",
+  "TicketDescription": "This is a sample ticket",
+  "StatusId": 1,
+  "CreatedOn": "2023-12-01T00:00:00Z",
+  "CreatedBy": 1
+}
+
+###
+
+# PUT request to update a ticket
+PUT {{TicketDesk.Server_HostAddress}}/api/ticket/1
+Content-Type: application/json
+
+{
+  "TicketId": 1,
+  "TicketTypeId": 1,
+  "DepartmentId": 2,
+  "TicketTitle": "Updated Ticket",
+  "TicketDescription": "This is an updated sample ticket",
+  "StatusId": 1,
+  "CreatedOn": "2023-12-01T00:00:00Z",
+  "CreatedBy": 1,
+  "ModifiedOn": "2023-12-02T00:00:00Z",
+  "ModifiedBy": 1
+}
+
+###
+
+# DELETE request to delete a ticket
+DELETE {{TicketDesk.Server_HostAddress}}/api/ticket/1
+Accept: application/json
+
+
