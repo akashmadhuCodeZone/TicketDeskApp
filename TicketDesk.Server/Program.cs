@@ -94,8 +94,8 @@ builder.Services.AddCors(options =>
                        .AllowAnyHeader()
                        .AllowAnyMethod();
         });
-});
 
+});
 // Configure distributed memory cache for session management
 builder.Services.AddDistributedMemoryCache(); // Add this line to configure in-memory cache
 
@@ -131,6 +131,9 @@ app.UseSession(); // Add this line to enable session
 
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 app.Run();
 

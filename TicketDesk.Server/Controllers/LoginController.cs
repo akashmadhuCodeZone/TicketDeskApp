@@ -19,11 +19,11 @@ namespace TicketDesk.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO login)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            return (login == null || string.IsNullOrEmpty(login.Email) || string.IsNullOrEmpty(login.Password)) ?
+            return (loginDTO == null || string.IsNullOrEmpty(loginDTO.Email) || string.IsNullOrEmpty(loginDTO.Password)) ?
                 BadRequest("Username and password must be provided.") :
-                (await _loginService.LoginAsync(login) is var user && user == null) ?
+                (await _loginService.LoginAsync(loginDTO) is var user && user == null) ?
                     Unauthorized("Invalid username or password.") :
                     Ok(new { Token = _jWTTokenGenrator.GenerateToken(user.UserId.ToString(), user.Email, user.RoleName) });
         }
