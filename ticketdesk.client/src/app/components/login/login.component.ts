@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../service/login-services/auth.service';
-import { LoginDTO } from '../../model/LoginDTO';
+import { AuthService } from '../../service/login-services/auth.service';
+import { LoginDTO } from '../../../model/LoginDTO';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Subscription } from 'rxjs';
 

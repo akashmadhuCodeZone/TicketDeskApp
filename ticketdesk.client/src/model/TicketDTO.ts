@@ -1,4 +1,4 @@
-export class Ticket {
+export class TicketDTO {
   ticketId!: number;
   ticketTypeId!: number;
   departmentId!: number;

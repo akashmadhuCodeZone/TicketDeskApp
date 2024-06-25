@@ -1,0 +1,34 @@
+<div class="card mt-4">
+  <div class="card-header">
+    <h2>User Profile</h2>
+  </div>
+  <div class="card-body">
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="profileId">Profile ID</label>
+        <input type="text" class="form-control" id="profileId" [(ngModel)]="user.profileId" name="profileId" readonly>
+      </div>
+      <div class="form-group">
+        <label for="userId">User ID</label>
+        <input type="text" class="form-control" id="userId" [(ngModel)]="user.userId" name="userId" readonly>
+      </div>
+      <div class="form-group">
+        <label for="displayName">Display Name</label>
+        <input type="text" class="form-control" id="displayName" [(ngModel)]="user.displayName" name="displayName" required>
+      </div>
+      <div class="form-group">
+        <label for="genderId">Gender</label>
+        <select class="form-control" id="genderId" [(ngModel)]="user.genderId" name="genderId" required>
+          <option *ngFor="let gender of genders" [value]="gender.id">{{ gender.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="countryId">Country</label>
+        <select class="form-control" id="countryId" [(ngModel)]="user.countryId" name="countryId" required>
+          <option *ngFor="let country of countries" [value]="country.id">{{ country.name }}</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-export class UserProfile {
+export class UserProfileDTO {
   profileId!: number;
   userId!: number;
   displayName!: string;
