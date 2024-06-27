@@ -1,7 +1,7 @@
-<form [formGroup]="agentForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
   <div class="form-group">
-    <label for="agentId">Agent ID</label>
-    <input type="text" class="form-control" id="agentId" formControlName="agentId" readonly>
+    <label for="customerId">Customer ID</label>
+    <input type="text" class="form-control" id="customerId" formControlName="customerId" readonly>
   </div>
 
   <!-- User Information -->
@@ -42,5 +42,5 @@
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary">Register</button>
 </form>

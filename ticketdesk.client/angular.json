@@ -21,7 +21,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/ticketdesk.client",
             "index": "src/index.html",
@@ -67,10 +67,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ticketdesk.client:build:production"
+              "browserTarget": "ticketdesk.client:build:production"
             },
             "development": {
-              "buildTarget": "ticketdesk.client:build:development"
+              "browserTarget": "ticketdesk.client:build:development"
             }
           },
           "defaultConfiguration": "development",

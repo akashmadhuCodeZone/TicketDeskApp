@@ -1,63 +1,60 @@
-import { Component, OnInit } from '@angular/core';
-
-interface Agent {
-  id: number;
-  name: string;
-  phone: string;
-  email: string;
-}
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AgentService } from '../../../service/agent-services/agent.service';
+import { AgentDTO } from '../../../../model/AgentDTO';
 
 @Component({
   selector: 'app-agent-manager',
   templateUrl: './agent-manager.component.html',
   styleUrls: ['./agent-manager.component.css']
 })
-export class AgentManagerComponent implements OnInit {
-  agent: Agent = { id: 0, name: '', phone: '', email: '' };
-  agents: Agent[] = [];
-  isEditMode = false;
+export class AgentManagerComponent  {
+  agentForm: FormGroup;
+  errorMessage: string | null = null;
 
-  //constructor() { }
-
-  ngOnInit(): void {
-    this.loadAgents();
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private agentService: AgentService
+  ) {
+    this.agentForm = this.formBuilder.group({
+      agentId: [{ value: '', disabled: true }],
+      user: this.formBuilder.group({
+        userId: [{ value: '', disabled: true }],
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        phoneNumber: ['', Validators.required],
+        emailAddress: ['', [Validators.required, Validators.email]],
+        password: ['', Validators.required],
+        roleId: ['', Validators.required]
+      })
+    });
   }
 
-  loadAgents(): void {
-    // Load agents from a service or API call
-    // This is just placeholder data
-    this.agents = [
-      { id: 1, name: 'Agent Smith', phone: '+1234567890', email: 'smith@example.com' },
-      { id: 2, name: 'Agent Johnson', phone: '+0987654321', email: 'johnson@example.com' }
-    ];
-  }
+  //ngOnInit(): void {
+  //  // Initialize any necessary data here
+  //}
 
-  onSubmit(): void {
-    if (this.isEditMode) {
-      // Update the agent
-      const index = this.agents.findIndex(a => a.id === this.agent.id);
-      if (index !== -1) {
-        this.agents[index] = { ...this.agent };
-      }
-    } else {
-      // Create a new agent
-      const newAgent = { ...this.agent, id: this.agents.length + 1 };
-      this.agents.push(newAgent);
+  async onSubmit() {
+    if (this.agentForm.invalid) {
+      return;
     }
-    this.resetForm();
-  }
 
-  editAgent(agent: Agent): void {
-    this.agent = { ...agent };
-    this.isEditMode = true;
-  }
+    const agentData: AgentDTO = {
+      ...this.agentForm.value,
+      user: {
+        ...this.agentForm.value.user
+      }
+    };
 
-  deleteAgent(id: number): void {
-    this.agents = this.agents.filter(agent => agent.id !== id);
-  }
-
-  resetForm(): void {
-    this.agent = { id: 0, name: '', phone: '', email: '' };
-    this.isEditMode = false;
+    try {
+      const response = await this.agentService.createOrUpdateAgent(agentData);
+      console.log('Agent created/updated successfully:', response);
+      this.router.navigate(['/dashboard']); // Navigate to the dashboard after successful creation/update
+    } catch (error) {
+      console.error('Error creating/updating agent:', error);
+      this.errorMessage = 'Failed to create/update agent';
+    }
   }
 }

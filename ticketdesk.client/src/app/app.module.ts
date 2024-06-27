@@ -5,14 +5,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { JwtModule } from '@auth0/angular-jwt';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from '../security/auth.guard';
-import { AuthService } from './service/login-services/auth.service';
-import { AppRoutingModule } from './app-routing.module';
+import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AgentManagerComponent } from './components/dashboard/agent-manager/agent-manager.component';
-import { UserProfileService } from './service/user-profile-service/user-profile-service.service';
+import { TicketManagerComponent } from './components/dashboard/ticket-manager/ticket-manager.component';
 import { UserProfileComponent } from './components/dashboard/user-profile/user-profile.component';
+import { CustomerRegistrationComponent } from './components/customer-registration/customer-registration.component';
+import { AppRoutingModule } from './app-routing.module';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
@@ -24,7 +24,9 @@ export function tokenGetter() {
     LoginComponent,
     DashboardComponent,
     AgentManagerComponent,
-    UserProfileComponent
+    TicketManagerComponent,
+    UserProfileComponent,
+    CustomerRegistrationComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +42,7 @@ export function tokenGetter() {
       }
     })
   ],
-  providers: [AuthGuard, AuthService, UserProfileService],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
