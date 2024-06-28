@@ -7,7 +7,7 @@ import { CustomerDTO as Customer, CustomerDTO } from '../../../model/CustomerDTO
   providedIn: 'root'
 })
 export class CustomerService {
-  private apiUrl = 'https://localhost:7290/api/customer';
+  private apiUrl = 'https://localhost:7290/api';
 
   constructor(private http: HttpClient) { }
 
@@ -68,7 +68,7 @@ export class CustomerService {
 
   async registerCustomer(customer: CustomerDTO): Promise<void> {
     try {
-      const response = await firstValueFrom(this.http.post<void>(this.apiUrl, customer));
+      const response = await firstValueFrom(this.http.post<void>(this.apiUrl +'/customer/register', customer));
       console.log('Customer registered successfully:', response);
       return response;
     } catch (error) {

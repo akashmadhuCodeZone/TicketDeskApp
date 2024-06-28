@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
-using TicketDesk.DTO.Registeration;
+using TicketDesk.DTO.Customer;
+using TicketDesk.DTO.User;
 
 namespace TicketDesk.DAL.Domain
 {
@@ -13,15 +14,15 @@ namespace TicketDesk.DAL.Domain
             _connectionString = connectionString;
         }
 
-        public async Task<bool> RegisterUserAsync(RegisterationDTO registeration)
+        public async Task<bool> RegisterUserAsync(CustomerDTO customerDTO)
         {
             using SqlConnection conn = new SqlConnection(_connectionString);
             try
             {
                 await conn.OpenAsync();
-                return await IsUserRegistered(registeration.EmailAddress, registeration.PhoneNumber)
+                return await IsUserRegistered(customerDTO.User.EmailAddress, customerDTO.User.PhoneNumber)
                     ? false
-                    : await ExecuteRegisterUserAsync(conn, registeration);
+                    : await ExecuteRegisterUserAsync(conn, customerDTO);
             }
             catch (Exception ex)
             {
@@ -34,19 +35,19 @@ namespace TicketDesk.DAL.Domain
             }
         }
 
-        private async Task<bool> ExecuteRegisterUserAsync(SqlConnection conn, RegisterationDTO registeration)
+        private async Task<bool> ExecuteRegisterUserAsync(SqlConnection conn, CustomerDTO customerDTO)
         {
             using SqlCommand cmd = new SqlCommand("usp_RegisterUser", conn)
             {
                 CommandType = CommandType.StoredProcedure
             };
 
-            cmd.Parameters.AddWithValue("@FirstName", registeration.FirstName);
-            cmd.Parameters.AddWithValue("@LastName", registeration.LastName);
-            cmd.Parameters.AddWithValue("@Email", registeration.EmailAddress);
-            cmd.Parameters.AddWithValue("@PhoneNumber", registeration.PhoneNumber);
-            cmd.Parameters.AddWithValue("@Password", registeration.Password.Encrypt()); // Encrypt the password
-            cmd.Parameters.AddWithValue("@RoleId", registeration.RoleId);
+            cmd.Parameters.AddWithValue("@FirstName", customerDTO.User.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", customerDTO.User.LastName);
+            cmd.Parameters.AddWithValue("@Email", customerDTO.User.EmailAddress);
+            cmd.Parameters.AddWithValue("@PhoneNumber", customerDTO.User.PhoneNumber);
+            cmd.Parameters.AddWithValue("@Password", customerDTO.User.Password.Encrypt()); // Encrypt the password
+            cmd.Parameters.AddWithValue("@RoleId", customerDTO.User.RoleId);
 
             using SqlDataReader reader = await cmd.ExecuteReaderAsync();
             return reader.Read() && reader.GetInt32(0) > 0;

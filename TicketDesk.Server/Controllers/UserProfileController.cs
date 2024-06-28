@@ -65,7 +65,8 @@ namespace TicketDesk.Server.Controllers
                 {
                     return BadRequest("Invalid user profile data.");
                 }
-
+                profile.ProfileId = profileId;
+                profile.UserId = userId;
                 var result = await _userProfileService.UpdateUserProfileAsync(profile);
                 if (result)
                 {

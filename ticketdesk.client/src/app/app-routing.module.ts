@@ -11,11 +11,15 @@ import { CustomerRegistrationComponent } from './components/customer-registratio
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'dashboard/agent-manager', component: AgentManagerComponent, canActivate: [AuthGuard] },
-  { path: 'dashboard/ticket-manager', component: TicketManagerComponent, canActivate: [AuthGuard] },
-  { path: 'dashboard/user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
-  { path: 'customer-registration', component: CustomerRegistrationComponent }
+  { path: 'customer-registration', component: CustomerRegistrationComponent },
+  {
+    path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard], children: [
+      { path: '', component: DashboardComponent },
+      { path: 'agent-manager', component: AgentManagerComponent },
+      { path: 'ticket-manager', component: TicketManagerComponent },
+      { path: 'user-profile', component: UserProfileComponent }
+    ]
+  }
 ];
 
 @NgModule({

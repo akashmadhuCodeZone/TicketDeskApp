@@ -4,32 +4,23 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TicketDesk.DTO.User;
 
 namespace TicketDesk.DTO.UserProfile
 {
     public class UserProfileDTO
     {
-        [Key]
         public Guid ProfileId { get; set; }
-
-        [Required(ErrorMessage = "User ID is required")]
         public Guid UserId { get; set; }
-
-        [Required(ErrorMessage = "Display name is required")]
-        [StringLength(100, ErrorMessage = "Display name must be between 1 and 100 characters", MinimumLength = 1)]
-        public string DisplayName { get; set; }
-
-        [Required(ErrorMessage = "Gender ID is required")]
-        public int GenderId { get; set; }
-
-        [Required(ErrorMessage = "Country ID is required")]
-        public int CountryId { get; set; }
-
-        [Required(ErrorMessage = "Created on date is required")]
-        public DateTime CreatedOn { get; set; }
-
-        [Required(ErrorMessage = "Created by is required")]
-        public Guid CreatedBy { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public long PhoneNumber { get; set; }
+        public string EmailAddress { get; set; }
+        public string? DisplayName { get; set; }
+        public int? GenderId { get; set; }
+        public int? CountryId { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public Guid? CreatedBy { get; set; }
 
         public DateTime? ModifiedOn { get; set; }
 

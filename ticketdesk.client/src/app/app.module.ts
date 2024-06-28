@@ -1,22 +1,19 @@
-import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { JwtModule } from '@auth0/angular-jwt';
+import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
 
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthGuard } from '../security/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { AuthService } from './service/login-services/auth.service';
+import { AuthGuard } from '../security/auth.guard';
 import { AgentManagerComponent } from './components/dashboard/agent-manager/agent-manager.component';
-import { TicketManagerComponent } from './components/dashboard/ticket-manager/ticket-manager.component';
 import { UserProfileComponent } from './components/dashboard/user-profile/user-profile.component';
+import { TicketManagerComponent } from './components/dashboard/ticket-manager/ticket-manager.component';
 import { CustomerRegistrationComponent } from './components/customer-registration/customer-registration.component';
-import { AppRoutingModule } from './app-routing.module';
-
-export function tokenGetter() {
-  return localStorage.getItem('token');
-}
 
 @NgModule({
   declarations: [
@@ -36,13 +33,13 @@ export function tokenGetter() {
     AppRoutingModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: tokenGetter,
-        allowedDomains: ["localhost:7290"],
-        disallowedRoutes: ["localhost:7290/api/auth"]
+        tokenGetter: () => localStorage.getItem('token'),
+        allowedDomains: ['localhost:7290'],
+        disallowedRoutes: ['localhost:7290/api/auth']
       }
     })
   ],
-  providers: [AuthGuard],
+  providers: [AuthService, AuthGuard, JwtHelperService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,45 +1,33 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/login-services/auth.service';
 import { LoginDTO } from '../../../model/LoginDTO';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, OnDestroy {
-  loginForm!: FormGroup;
+export class LoginComponent  {
+  loginForm: FormGroup;
   submitted = false;
   errorMessage: string | null = null;
-  private authSubscription!: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private authService: AuthService,
     private jwtHelper: JwtHelperService
-  ) { }
-
-  ngOnInit(): void {
-    this.initializeForm();
-  }
-
-  ngOnDestroy(): void {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
-    }
-  }
-
-  private initializeForm(): void {
+  ) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
   }
+
+  
 
   get f() {
     return this.loginForm.controls;
@@ -65,15 +53,19 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (response && response.token) {
         const decodedToken = this.jwtHelper.decodeToken(response.token);
         const email = decodedToken.email;
-        const role = decodedToken.role;
+        const role = decodedToken.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+        const userId = decodedToken.sub;
 
         console.log('Decoded JWT Email:', email);
         console.log('Decoded JWT Role:', role);
+        console.log('Decoded JWT UserId:', userId);
 
+        localStorage.setItem('token', response.token);
         localStorage.setItem('email', email);
         localStorage.setItem('role', role);
+        localStorage.setItem('userId', userId);
 
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['dashboard/user-profile']);
       }
     } catch (error) {
       console.error('Login error:', error);

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomerService } from '../../service/customer-services/customer.service';
 import { CustomerDTO } from '../../../model/CustomerDTO';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-customer-registration',
@@ -15,7 +16,8 @@ export class CustomerRegistrationComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -28,7 +30,7 @@ export class CustomerRegistrationComponent implements OnInit {
         phoneNumber: ['', Validators.required],
         emailAddress: ['', [Validators.required, Validators.email]],
         password: ['', Validators.required],
-        roleId: [3, Validators.required],  // Assuming 3 is the role ID for customers
+        roleId: [{ value: 4, disabled: true }]  // Assuming 3 is the role ID for customers
       })
     });
   }
@@ -44,13 +46,24 @@ export class CustomerRegistrationComponent implements OnInit {
       return;
     }
 
-    const customerDTO: CustomerDTO = this.customerForm.value;
+    // Enable the form controls before extracting the value
+    this.customerForm.get('customerId')?.enable();
+    this.customerForm.get('user.userId')?.enable();
+    this.customerForm.get('user.roleId')?.enable();
+
+    const customerDTO: CustomerDTO = this.customerForm.getRawValue();
     customerDTO.user.userId = this.generateUUID(); // Generate UUID for new user
     customerDTO.customerId = this.generateUUID(); // Generate UUID for new customer
+
+    // Disable the form controls again after extracting the value
+    this.customerForm.get('customerId')?.disable();
+    this.customerForm.get('user.userId')?.disable();
+    this.customerForm.get('user.roleId')?.disable();
 
     try {
       const response = await this.customerService.registerCustomer(customerDTO);
       console.log('Customer registered successfully:', response);
+      this.router.navigate(['dashboard/user-profile']);  // Navigate to user profile after registration
     } catch (error) {
       console.error('Registration error:', error);
       this.errorMessage = 'Failed to register customer';
@@ -59,7 +72,7 @@ export class CustomerRegistrationComponent implements OnInit {
 
   generateUUID(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }

@@ -4,10 +4,12 @@ using System.Text;
 using TicketDesk.Core.Interfaces;
 using TicketDesk.Core.Interfaces.Customer;
 using TicketDesk.Core.Interfaces.Login;
+using TicketDesk.Core.Interfaces.MasterData;
 using TicketDesk.Core.Interfaces.Registeration;
 using TicketDesk.Core.Interfaces.Tickets;
 using TicketDesk.Core.Services.Customer;
 using TicketDesk.Core.Services.Login;
+using TicketDesk.Core.Services.MasterData;
 using TicketDesk.Core.Services.Registeration;
 using TicketDesk.Core.Services.Tickets;
 using TicketDesk.Core.Services.UserProfile;
@@ -42,7 +44,8 @@ builder.Services.AddScoped<UserProfileDataAccess>(sp =>
     new UserProfileDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<TicketDataAccess>(sp =>
     new TicketDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped<MasterDataAccess>(sp =>
+    new MasterDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register business services
 builder.Services.AddScoped<IRegisterationService, RegisterationService>();
@@ -50,6 +53,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IUserPorofileService, UserProfileService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IMasterDataService, MasterDataService>();
 
 builder.Services.AddHttpClient("NoSslValidationClient")
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -96,6 +100,7 @@ builder.Services.AddCors(options =>
         });
 
 });
+
 // Configure distributed memory cache for session management
 builder.Services.AddDistributedMemoryCache(); // Add this line to configure in-memory cache
 
@@ -135,5 +140,5 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
-app.Run();
 
+app.Run();

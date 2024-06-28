@@ -1,30 +1,35 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { UserProfileDTO } from '../../../model/UserProfileDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
-
-  private apiUrl = 'https://localhost:7029/api/'; 
+  private apiUrl = 'https://localhost:7290/api'; // Replace with your actual API URL
 
   constructor(private http: HttpClient) { }
 
-  getUserProfile(userId: number): Observable<UserProfileDTO> {
-    return this.http.get<UserProfileDTO>(`${this.apiUrl}/userProfiles/${userId}`);
+  async getUserProfile(userId: string|null): Promise<UserProfileDTO> {
+    try {
+      const response = await firstValueFrom(this.http.get<UserProfileDTO>(`${this.apiUrl}/userprofile/${userId}`));
+      return response;
+    } catch (error) {
+      console.error('Error fetching user profile', error);
+      throw error;
+    }
   }
 
-  getGenders(): Observable<{ id: number, name: string }[]> {
-    return this.http.get<{ id: number, name: string }[]>(`${this.apiUrl}/genders`);
+  async updateUserProfile(profileId: string|null,userId:string|null, userProfile: UserProfileDTO): Promise<void> {
+    try {
+      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/userprofile/${profileId}/${userId}`, userProfile));
+    } catch (error) {
+      console.error('Error updating user profile', error);
+      throw error;
+    }
   }
 
-  getCountries(): Observable<{ id: number, name: string }[]> {
-    return this.http.get<{ id: number, name: string }[]>(`${this.apiUrl}/countries`);
-  }
-
-  updateUserProfile(user: UserProfileDTO): Observable<UserProfileDTO> {
-    return this.http.put<UserProfileDTO>(`${this.apiUrl}/userProfiles/${user.userId}`, user);
-  }
 }
+
+

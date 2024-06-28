@@ -1,12 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TicketDesk.Core.Interfaces.Registeration;
+﻿using TicketDesk.Core.Interfaces.Registeration;
 using TicketDesk.DAL.Domain;
-using TicketDesk.DTO.Registeration;
+using TicketDesk.DTO.Customer;
 
 namespace TicketDesk.Core.Services.Registeration
 {
@@ -20,11 +14,11 @@ namespace TicketDesk.Core.Services.Registeration
         }
 
 
-        public async Task<bool> RegisterUserAsync(RegisterationDTO registeration)
+        public async Task<bool> RegisterUserAsync(CustomerDTO customerDTO)
         {
             try
             {
-                return await _registerationDataAccess.RegisterUserAsync(registeration);
+                return await _registerationDataAccess.RegisterUserAsync(customerDTO);
             }
             catch (Exception)
             {

@@ -1,11 +1,10 @@
-﻿using TicketDesk.DTO.Registeration;
-using TicketDesk.DTO.User;
+﻿using TicketDesk.DTO.Customer;
 
 namespace TicketDesk.Core.Interfaces.Registeration
 {
     public interface IRegisterationService
     {
-        Task<bool> RegisterUserAsync(RegisterationDTO registerationDto);
+        Task<bool> RegisterUserAsync(CustomerDTO customerDTO);
 
     }
 }

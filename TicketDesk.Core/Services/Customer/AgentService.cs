@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TicketDesk.Core.Interfaces.Customer;
+﻿using TicketDesk.Core.Interfaces.Customer;
 using TicketDesk.DAL.Domain;
 using TicketDesk.DTO.Customer;
-using TicketDesk.DTO.Registeration;
+using TicketDesk.DTO.User;
 
 namespace TicketDesk.Core.Services.Customer
 {
@@ -17,11 +12,11 @@ namespace TicketDesk.Core.Services.Customer
         {
             _registerationDataAccess = registerationDataAccess;
         }
-        public async Task<bool> CreateAgentAsync(RegisterationDTO registeration)
+        public async Task<bool> CreateAgentAsync(CustomerDTO customerDTO)
         {
 			try
 			{
-				return await _registerationDataAccess.RegisterUserAsync(registeration);
+				return await _registerationDataAccess.RegisterUserAsync(customerDTO);
 			}
 			catch (Exception ex)
 			{

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketDesk.Core.Interfaces.Customer;
 using TicketDesk.DTO.Customer;
-using TicketDesk.DTO.Registeration;
+using TicketDesk.DTO.User;
 
 namespace TicketDesk.API.Controllers
 {
@@ -17,13 +17,13 @@ namespace TicketDesk.API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateAgentAsync([FromBody] RegisterationDTO registeration)
+        public async Task<IActionResult> CreateAgentAsync([FromBody] CustomerDTO customerDTO)
         {
-            if (registeration == null)
+            if (customerDTO == null)
             {
                 return BadRequest("Invalid customer data.");
             }
-            return await _customerService.CreateAgentAsync(registeration) ? Ok("Customer created successfully.")
+            return await _customerService.CreateAgentAsync(customerDTO) ? Ok("Customer created successfully.")
                 : BadRequest("Failed to create customer.");
             
         }

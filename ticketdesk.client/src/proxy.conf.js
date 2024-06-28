@@ -12,6 +12,7 @@ const PROXY_CONFIG = [
       "/ticket",
       "/registeration",
       "/agent",
+      "/customer"
     ],
     target,
     secure: false

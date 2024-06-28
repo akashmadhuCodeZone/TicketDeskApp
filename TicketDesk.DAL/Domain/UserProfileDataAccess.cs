@@ -33,18 +33,20 @@ namespace TicketDesk.DAL.Domain
                     {
                         ProfileId = (Guid)reader["ProfileId"],
                         UserId = (Guid)reader["UserId"],
-                        DisplayName = reader["DisplayName"].ToString(),
-                        GenderId = (int)reader["GenderId"],
-                        CountryId = (int)reader["CountryId"],
-                        CreatedOn = (DateTime)reader["CreatedOn"],
-                        CreatedBy = (Guid)reader["CreatedBy"],
-                        ModifiedOn = reader["ModifiedOn"] as DateTime?,
-                        ModifiedBy = (Guid)reader["ModifiedBy"] as Guid?
+                        DisplayName = reader["DisplayName"]?.ToString(),
+                        GenderId = reader["GenderId"] as int?,
+                        CountryId = reader["CountryId"] as int?,
+                        FirstName = reader["FirstName"]?.ToString(),
+                        LastName = reader["LastName"]?.ToString(),
+                        EmailAddress = reader["EmailAddress"]?.ToString(),
+                        PhoneNumber = (long)reader["PhoneNumber"],
+
+
                     };
                 }
                 return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Optionally: Add logging here
                 throw;
@@ -112,10 +114,10 @@ namespace TicketDesk.DAL.Domain
                 cmd.Parameters.AddWithValue("@DisplayName", profile.DisplayName);
                 cmd.Parameters.AddWithValue("@GenderId", profile.GenderId);
                 cmd.Parameters.AddWithValue("@CountryId", profile.CountryId);
-                cmd.Parameters.AddWithValue("@CreatedOn", profile.CreatedOn);
-                cmd.Parameters.AddWithValue("@CreatedBy", profile.CreatedBy);
-                cmd.Parameters.AddWithValue("@ModifiedOn", DateTime.UtcNow);
-                cmd.Parameters.AddWithValue("@ModifiedBy", profile.ModifiedBy);
+                cmd.Parameters.AddWithValue("@FirstName", profile.FirstName);
+                cmd.Parameters.AddWithValue("@LastName", profile.LastName);
+                cmd.Parameters.AddWithValue("@Email", profile.EmailAddress);
+                cmd.Parameters.AddWithValue("@PhoneNumber", profile.PhoneNumber);
 
                 await conn.OpenAsync();
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();

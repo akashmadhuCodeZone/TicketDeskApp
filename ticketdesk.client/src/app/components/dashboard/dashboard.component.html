@@ -1,1 +1,23 @@
-<p>dashboard works!</p>
+<div class="dashboard-wrapper">
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <ul>
+      <li><a routerLink="/dashboard">Dashboard</a></li>
+      <li><a routerLink="/dashboard/agent-manager">Agent Manager</a></li>
+      <li><a routerLink="/dashboard/ticket-manager">Ticket Manager</a></li>
+      <li><a routerLink="/dashboard/user-profile">User Profile</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h1>Ticket Desk</h1>
+      <div class="user-info">
+        <span>Welcome, {{ username }}</span>
+        <button (click)="logout()">Logout</button>
+      </div>
+    </div>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

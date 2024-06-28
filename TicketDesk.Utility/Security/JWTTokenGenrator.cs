@@ -15,7 +15,7 @@ namespace TicketDesk.Utility.Security
             _configuration = configuration;
         }
 
-        public string GenerateToken(string userId, string username, string roles)
+        public async Task<string> GenerateTokenAsync(string userId, string email, string roles)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
 
@@ -29,21 +29,13 @@ namespace TicketDesk.Utility.Security
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
-                new Claim(JwtRegisteredClaimNames.UniqueName, username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            // Split the roles string into individual roles if it is a comma-separated string
-            if (!string.IsNullOrEmpty(roles))
-            {
-                var roleArray = roles.Split(',');
-                foreach (var role in roleArray)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role.Trim()));
-                }
-            }
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, userId),
+        new Claim(JwtRegisteredClaimNames.UniqueName, email),
+        new Claim(JwtRegisteredClaimNames.Email, email), // Assuming username is the email
+        new Claim(ClaimTypes.Role, roles), // Ensure role is added here
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
             var token = new JwtSecurityToken(
                 issuer: issuer,
@@ -54,5 +46,7 @@ namespace TicketDesk.Utility.Security
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
     }
 }
