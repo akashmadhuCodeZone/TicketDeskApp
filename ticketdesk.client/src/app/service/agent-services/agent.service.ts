@@ -7,7 +7,7 @@ import { AgentDTO } from '../../../model/AgentDTO';
   providedIn: 'root'
 })
 export class AgentService {
-  private apiUrl = 'https://localhost:7290/api/agent';
+  private apiUrl = 'https://localhost:7290/api';
 
   constructor(private http: HttpClient) { }
 

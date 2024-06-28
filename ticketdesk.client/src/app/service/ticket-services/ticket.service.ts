@@ -1,67 +1,48 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { TicketDTO as Ticket } from '../../../model/TicketDTO'
+import { TicketsDTO } from '../../../model/TicketDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketService {
-  private apiUrl = 'https://localhost:7290/api/ticket';
+  private apiUrl = 'https://your-api-url/api/tickets'; // Update this URL to your backend API
 
   constructor(private http: HttpClient) { }
 
-  async getTickets(): Promise<Ticket[]> {
+  async getAllTickets(): Promise<TicketsDTO[]> {
     try {
-      const response = await firstValueFrom(this.http.get<Ticket[]>(this.apiUrl));
-      console.log('Response from API:', response);
-      return response;
+      return await firstValueFrom(this.http.get<TicketsDTO[]>(this.apiUrl));
     } catch (error) {
-      console.error('API call error:', error);
+      console.error('Error fetching tickets', error);
       throw error;
     }
   }
 
-  async getTicketById(id: number): Promise<Ticket> {
+  async createTicket(ticket: TicketsDTO): Promise<void> {
     try {
-      const response = await firstValueFrom(this.http.get<Ticket>(`${this.apiUrl}/${id}`));
-      console.log('Response from API:', response);
-      return response;
+      await firstValueFrom(this.http.post<void>(this.apiUrl, ticket));
     } catch (error) {
-      console.error('API call error:', error);
+      console.error('Error creating ticket', error);
       throw error;
     }
   }
 
-  async createTicket(ticket: Ticket): Promise<Ticket> {
+  async updateTicket(ticketId: string, ticket: TicketsDTO): Promise<void> {
     try {
-      const response = await firstValueFrom(this.http.post<Ticket>(this.apiUrl, ticket));
-      console.log('Response from API:', response);
-      return response;
+      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/${ticketId}`, ticket));
     } catch (error) {
-      console.error('API call error:', error);
+      console.error('Error updating ticket', error);
       throw error;
     }
   }
 
-  async updateTicket(ticket: Ticket): Promise<void> {
+  async deleteTicket(ticketId: string): Promise<void> {
     try {
-      const response = await firstValueFrom(this.http.put<void>(`${this.apiUrl}/${ticket.ticketId}`, ticket));
-      console.log('Response from API:', response);
-      return response;
+      await firstValueFrom(this.http.delete<void>(`${this.apiUrl}/${ticketId}`));
     } catch (error) {
-      console.error('API call error:', error);
-      throw error;
-    }
-  }
-
-  async deleteTicket(id: number): Promise<void> {
-    try {
-      const response = await firstValueFrom(this.http.delete<void>(`${this.apiUrl}/${id}`));
-      console.log('Response from API:', response);
-      return response;
-    } catch (error) {
-      console.error('API call error:', error);
+      console.error('Error deleting ticket', error);
       throw error;
     }
   }

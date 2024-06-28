@@ -7,18 +7,20 @@ import { Router } from '@angular/router';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  username: string | null = null;
+  username!: string|null;
+  role!: string | null;
 
   constructor(private router: Router) { }
 
   ngOnInit(): void {
-    this.username = localStorage.getItem('email'); // Assume username is stored in localStorage
+    this.username = localStorage.getItem('email');
+    this.role = localStorage.getItem('role');
   }
 
-  logout() {
-    localStorage.removeItem('token');
+  logout(): void {
     localStorage.removeItem('email');
     localStorage.removeItem('role');
+    localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 }

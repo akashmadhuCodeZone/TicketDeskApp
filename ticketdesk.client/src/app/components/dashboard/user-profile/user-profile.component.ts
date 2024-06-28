@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { EmailValidator, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserProfileService } from '../../../service/user-profile-service/user-profile-service.service';
 import { UserProfileDTO } from '../../../../model/UserProfileDTO';
 import { MasterDataService } from '../../../service/master-data-service/master-data.service';

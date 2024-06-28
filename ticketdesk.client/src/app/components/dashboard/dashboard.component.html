@@ -2,10 +2,15 @@
   <div class="sidebar">
     <h2>Menu</h2>
     <ul>
-      <li><a routerLink="/dashboard">Dashboard</a></li>
-      <li><a routerLink="/dashboard/agent-manager">Agent Manager</a></li>
-      <li><a routerLink="/dashboard/ticket-manager">Ticket Manager</a></li>
-      <li><a routerLink="/dashboard/user-profile">User Profile</a></li>
+      <li *ngIf="role === 'Customer' || role === 'agent'">
+        <a routerLink="/dashboard/ticket-manager">Ticket Manager</a>
+      </li>
+      <li *ngIf="role === 'Customer' || role === 'Agent' || role === 'Admin'">
+        <a routerLink="/dashboard/user-profile">User Profile</a>
+      </li>
+      <li *ngIf="role === 'Admin'">
+        <a routerLink="/dashboard/agent-manager">Agent Manager</a>
+      </li>
     </ul>
   </div>
   <div class="main-content">

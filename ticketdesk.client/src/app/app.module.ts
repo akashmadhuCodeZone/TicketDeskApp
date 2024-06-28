@@ -15,6 +15,12 @@ import { UserProfileComponent } from './components/dashboard/user-profile/user-p
 import { TicketManagerComponent } from './components/dashboard/ticket-manager/ticket-manager.component';
 import { CustomerRegistrationComponent } from './components/customer-registration/customer-registration.component';
 
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,6 +37,11 @@ import { CustomerRegistrationComponent } from './components/customer-registratio
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
+    TableModule,
+    DialogModule,
+    DropdownModule,
+    ButtonModule,
+    BrowserAnimationsModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: () => localStorage.getItem('token'),
