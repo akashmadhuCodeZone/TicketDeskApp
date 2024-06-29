@@ -17,7 +17,8 @@ const routes: Routes = [
       { path: '', component: DashboardComponent },
       { path: 'agent-manager', component: AgentManagerComponent },
       { path: 'ticket-manager', component: TicketManagerComponent },
-      { path: 'user-profile', component: UserProfileComponent }
+      { path: 'user-profile', component: UserProfileComponent },
+      { path: 'ticket-assignment', component: TicketManagerComponent},
     ]
   }
 ];

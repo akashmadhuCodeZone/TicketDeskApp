@@ -1,50 +1,68 @@
 <div class="container mt-4">
   <h2>Ticket Manager</h2>
+  <button pButton *ngIf="role === 'Customer'" type="button" label="Create Ticket" icon="pi pi-plus" (click)="showDialog()" class="mb-2"></button>
 
-  <!-- Button to create a new ticket -->
-  <button pButton type="button" label="Create Ticket" class="p-button-raised p-button-primary" (click)="showDialog()"></button>
-
-  <!-- Ticket list -->
-  <p-table [value]="tickets" responsiveLayout="scroll">
+  <p-table [value]="tickets" responsiveLayout="scroll" class="p-mt-2">
     <ng-template pTemplate="header">
       <tr>
         <th>Title</th>
         <th>Description</th>
         <th>Status</th>
+        <th *ngIf="role === 'Admin'">Agent</th>
         <th>Actions</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-ticket>
       <tr>
-        <td>{{ ticket.ticketTittle }}</td>
+        <td>{{ ticket.ticketTitle }}</td>
         <td>{{ ticket.ticketDescription }}</td>
         <td>{{ getStatusName(ticket.statusId) }}</td>
+        <td *ngIf="role === 'Admin'">{{ getAgentName(ticket.agentId) }}</td>
         <td>
-          <button pButton type="button" icon="pi pi-pencil" class="p-button-warning p-button-sm" (click)="editTicket(ticket)"></button>
-          <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-sm" (click)="deleteTicket(ticket.ticketId)"></button>
+          <button pButton type="button" icon="pi pi-pencil" class="p-button-warning p-mr-2" (click)="editTicket(ticket.ticketId)" *ngIf="role === 'Customer'"></button>
+          <button pButton type="button" icon="pi pi-trash" class="p-button-danger" (click)="confirmDelete(ticket.ticketId)" *ngIf="role === 'Customer'"></button>
+          <button pButton type="button" icon="pi pi-user-edit" class="p-button-info" (click)="assignAgent(ticket)" *ngIf="role === 'Admin'"></button>
         </td>
       </tr>
     </ng-template>
   </p-table>
 
   <!-- Dialog for creating and updating tickets -->
-  <p-dialog header="{{ isEditMode ? 'Update Ticket' : 'Create Ticket' }}" id="Popup" [(visible)]="displayDialog" [modal]="true" [style]="{width: '500px'}">
+  <p-dialog header="{{ isEditMode ? 'Update Ticket' : 'Create Ticket' }}" [(visible)]="displayDialog" [modal]="true" [style]="{ width: '500px' }">
     <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="ticketTittle">Title</label>
-        <input type="text" pInputText formControlName="ticketTittle" class="form-control" id="ticketTittle" required>
+        <label for="ticketTitle">Title</label>
+        <input type="text" pInputText formControlName="ticketTitle" class="form-control" id="ticketTitle" [readonly]="role !== 'Customer'" required>
       </div>
       <div class="form-group">
         <label for="ticketDescription">Description</label>
-        <textarea pInputTextarea formControlName="ticketDescription" class="form-control" id="ticketDescription" required></textarea>
+        <textarea pInputTextarea formControlName="ticketDescription" class="form-control" id="ticketDescription" [readonly]="role !== 'Customer'" required></textarea>
       </div>
       <div class="form-group">
         <label for="statusId">Status</label>
-        <p-dropdown [options]="statuses" optionLabel="displayName" formControlName="statusId" class="form-control" id="statusId" required></p-dropdown>
+        <p-dropdown [options]="getStatusesForRole()" optionLabel="displayName" formControlName="statusId" class="form-control" id="statusId" required></p-dropdown>
       </div>
       <div class="p-dialog-footer">
         <button pButton type="submit" label="{{ isEditMode ? 'Update' : 'Create' }}" class="p-button-primary"></button>
       </div>
     </form>
   </p-dialog>
+
+  <!-- Dialog for assigning agents -->
+  <p-dialog header="Assign Agent" [(visible)]="displayAgentDialog" [modal]="true" [style]="{ width: '400px' }">
+    <div class="assign-agent-dialog">
+      <form [formGroup]="assignmentForm" (ngSubmit)="onAssign()">
+        <div class="form-group">
+          <label for="agentId">Agent</label>
+          <p-dropdown [options]="agents" optionLabel="user.firstName" formControlName="agentId" id="agentId" required></p-dropdown>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="submit" label="Assign" class="p-button-primary assign-btn"></button>
+          <button pButton type="button" label="Cancel" class="p-button-secondary cancel-btn" (click)="displayAgentDialog = false"></button>
+        </div>
+      </form>
+    </div>
+  </p-dialog>
+
+  <p-confirmDialog></p-confirmDialog>
 </div>

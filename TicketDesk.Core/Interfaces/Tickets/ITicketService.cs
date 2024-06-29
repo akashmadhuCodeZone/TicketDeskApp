@@ -12,8 +12,10 @@ namespace TicketDesk.Core.Interfaces.Tickets
     {
         Task<TicketsDTO> GetTicketByIdAsync(Guid ticketId);
         Task<List<TicketsDTO>> GetAllTicketsAsync();
+        Task<List<TicketsDTO>> GetTicketsByUserAsync(Guid userId);
         Task<bool> CreateTicketAsync(TicketsDTO ticket);
         Task<bool> UpdateTicketAsync(TicketsDTO ticket);
         Task<bool> DeleteTicketAsync(Guid ticketId);
+        public Task<List<TicketsDTO>> GetTicketsWithAgentAsync();
     }
 }

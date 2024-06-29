@@ -5,8 +5,10 @@ export class TicketsDTO {
   ticketTitle!: string;
   ticketDescription!: string;
   statusId!: number;
+  agentId?: string|null; 
+  agentName?: string|null; 
   createdOn!: Date | null;
-  createdBy!: string; 
+  createdBy!: string|null; 
   modifiedOn!: Date | null;
   modifiedBy!: string; 
 }

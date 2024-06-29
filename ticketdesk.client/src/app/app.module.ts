@@ -20,6 +20,12 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+
+export function tokenGetter() {
+  return localStorage.getItem('token');
+}
 
 @NgModule({
   declarations: [
@@ -42,15 +48,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     DropdownModule,
     ButtonModule,
     BrowserAnimationsModule,
+    ConfirmDialogModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: () => localStorage.getItem('token'),
+        tokenGetter: tokenGetter,
         allowedDomains: ['localhost:7290'],
         disallowedRoutes: ['localhost:7290/api/auth']
       }
     })
   ],
-  providers: [AuthService, AuthGuard, JwtHelperService],
+  providers: [AuthService, AuthGuard, JwtHelperService, ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

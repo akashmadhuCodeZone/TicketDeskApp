@@ -1,25 +1,133 @@
-.card {
-  margin-top: 20px;
-}
-
-.card-header {
-  background-color: #007bff;
-  color: white;
-}
-
-.card-body {
+/* General container styles */
+.container {
+  margin: 0 auto;
   padding: 20px;
+  max-width: 800px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Header styles */
+h2 {
+  color: #343a40;
+  text-align: center;
+}
+
+/* Form group styles */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
-.btn-primary {
+/* Label styles */
+label {
+  font-weight: bold;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  display: block; /* Ensure label is displayed as a block element */
+}
+
+/* Input and dropdown styles */
+input, textarea, p-dropdown {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  margin-bottom: 1rem;
+}
+
+/* Button styles */
+button.p-button-primary {
+  width: 100%;
+}
+
+/* Dialog footer styles */
+.p-dialog-footer {
+  text-align: right;
+}
+
+/* Specific button styles */
+button.p-button-warning, button.p-button-danger {
+  margin: 0 5px;
+}
+
+/* Assign Agent Dialog styles */
+.assign-agent-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+  .assign-agent-dialog .form-group {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .assign-agent-dialog label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block; /* Ensure label is displayed as a block element */
+  }
+
+  .assign-agent-dialog .form-control {
+    width: 100%;
+  }
+
+/* Style the p-dropdown */
+.ui-dropdown {
+  width: 100%; /* Ensure dropdown takes full width */
+  max-width: 250px; /* Limit the maximum width */
+  margin-top: 8px;
+}
+
+  .ui-dropdown .ui-dropdown-label {
+    padding: 0.5rem 1rem;
+  }
+
+  .ui-dropdown .ui-dropdown-items-wrapper {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .ui-dropdown .ui-dropdown-item {
+    padding: 0.5rem 1rem;
+  }
+
+    .ui-dropdown .ui-dropdown-item:hover {
+      background-color: #e9ecef;
+    }
+
+.assign-agent-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 1rem;
+}
+
+  .assign-agent-dialog .p-dialog-footer button {
+    width: 48%;
+  }
+
+/* Assign and Cancel button styles */
+.assign-btn {
   background-color: #007bff;
   border-color: #007bff;
+  color: #fff;
 }
 
-.alert-danger {
-  margin-top: 20px;
+  .assign-btn:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+  }
+
+.cancel-btn {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
 }
+
+  .cancel-btn:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+  }

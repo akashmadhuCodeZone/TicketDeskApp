@@ -22,7 +22,7 @@ namespace TicketDesk.API.Controllers
             return Ok(tickets);
         }
 
-        [HttpGet("{ticketId}")]
+        [HttpGet("ticketId/{ticketId}")]
         public async Task<IActionResult> GetTicketById(Guid ticketId)
         {
             var ticket = await _ticketService.GetTicketByIdAsync(ticketId);
@@ -32,6 +32,32 @@ namespace TicketDesk.API.Controllers
             }
             return Ok(ticket);
         }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetTicketByUserAsync(Guid userId)
+        {
+            var ticket = await _ticketService.GetTicketsByUserAsync(userId);
+            if (ticket == null)
+            {
+                return NotFound("Ticket not found.");
+            }
+            return Ok(ticket);
+        }
+
+        [HttpGet("ticketsWithAgent")]
+        public async Task<IActionResult> GetTicketsWithAgent()
+        {
+            try
+            {
+                var tickets = await _ticketService.GetTicketsWithAgentAsync();
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> CreateTicket([FromBody] TicketsDTO ticket)
@@ -44,7 +70,7 @@ namespace TicketDesk.API.Controllers
             var result = await _ticketService.CreateTicketAsync(ticket);
             if (result)
             {
-                return Ok("Ticket created successfully.");
+                return Ok();
             }
             return BadRequest("Failed to create ticket.");
         }
@@ -60,18 +86,18 @@ namespace TicketDesk.API.Controllers
             var result = await _ticketService.UpdateTicketAsync(ticket);
             if (result)
             {
-                return Ok("Ticket updated successfully.");
+                return Ok();
             }
             return BadRequest("Failed to update ticket.");
         }
 
-        [HttpDelete("{ticketId}")]
+        [HttpDelete("deleteTicket/{ticketId}")]
         public async Task<IActionResult> DeleteTicket(Guid ticketId)
         {
             var result = await _ticketService.DeleteTicketAsync(ticketId);
             if (result)
             {
-                return Ok("Ticket deleted successfully.");
+                return Ok();
             }
             return BadRequest("Failed to delete ticket.");
         }

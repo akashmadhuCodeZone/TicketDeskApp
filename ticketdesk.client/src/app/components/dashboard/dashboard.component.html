@@ -2,7 +2,7 @@
   <div class="sidebar">
     <h2>Menu</h2>
     <ul>
-      <li *ngIf="role === 'Customer' || role === 'agent'">
+      <li *ngIf="role === 'Customer' || role === 'Agent'">
         <a routerLink="/dashboard/ticket-manager">Ticket Manager</a>
       </li>
       <li *ngIf="role === 'Customer' || role === 'Agent' || role === 'Admin'">
@@ -10,6 +10,9 @@
       </li>
       <li *ngIf="role === 'Admin'">
         <a routerLink="/dashboard/agent-manager">Agent Manager</a>
+      </li>
+      <li *ngIf="role === 'Admin'">
+        <a routerLink="/dashboard/ticket-assignment">Ticket Assignment</a>
       </li>
     </ul>
   </div>

@@ -50,6 +50,23 @@ namespace TicketDesk.Core.Services.Tickets
                 throw;
             }
         }
+        public async Task<List<TicketsDTO>> GetTicketsWithAgentAsync()
+        {
+            return await _ticketDataAccess.GetTicketsWithAgentAsync();
+        }
+
+        public async Task<List<TicketsDTO>> GetTicketsByUserAsync(Guid userId)
+        {
+            try
+            {
+                return await _ticketDataAccess.GetTicketsByUserAsync(userId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         public async Task<TicketsDTO> GetTicketByIdAsync(Guid ticketId)
         {

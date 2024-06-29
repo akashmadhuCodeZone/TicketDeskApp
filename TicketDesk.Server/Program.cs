@@ -2,18 +2,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TicketDesk.Core.Interfaces;
-using TicketDesk.Core.Interfaces.Customer;
+using TicketDesk.Core.Interfaces.Agent;
 using TicketDesk.Core.Interfaces.Login;
 using TicketDesk.Core.Interfaces.MasterData;
 using TicketDesk.Core.Interfaces.Registeration;
 using TicketDesk.Core.Interfaces.Tickets;
-using TicketDesk.Core.Services.Customer;
+using TicketDesk.Core.Services.Agent;
 using TicketDesk.Core.Services.Login;
 using TicketDesk.Core.Services.MasterData;
 using TicketDesk.Core.Services.Registeration;
 using TicketDesk.Core.Services.Tickets;
 using TicketDesk.Core.Services.UserProfile;
 using TicketDesk.DAL.Domain;
+using TicketDesk.DAL.Repository;
 using TicketDesk.Utility.Security;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +47,11 @@ builder.Services.AddScoped<TicketDataAccess>(sp =>
     new TicketDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<MasterDataAccess>(sp =>
     new MasterDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<AgentDataAccess>(sp =>
+    new AgentDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IAgentDataAccess>(sp =>
+    new AgentDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Register business services
 builder.Services.AddScoped<IRegisterationService, RegisterationService>();
