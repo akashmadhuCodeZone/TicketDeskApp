@@ -40,7 +40,7 @@
       </div>
       <div class="form-group">
         <label for="statusId">Status</label>
-        <p-dropdown [options]="getStatusesForRole()" optionLabel="displayName" formControlName="statusId" class="form-control" id="statusId" required></p-dropdown>
+        <p-dropdown [options]="getStatusesForRole()" optionLabel="displayName" formControlName="statusId" class="form-control" id="statusId" [disabled]="!isEditMode" placeholder="--Select Status--" required></p-dropdown>
       </div>
       <div class="p-dialog-footer">
         <button pButton type="submit" label="{{ isEditMode ? 'Update' : 'Create' }}" class="p-button-primary"></button>
@@ -48,13 +48,14 @@
     </form>
   </p-dialog>
 
+
   <!-- Dialog for assigning agents -->
   <p-dialog header="Assign Agent" [(visible)]="displayAgentDialog" [modal]="true" [style]="{ width: '400px' }">
     <div class="assign-agent-dialog">
       <form [formGroup]="assignmentForm" (ngSubmit)="onAssign()">
         <div class="form-group">
           <label for="agentId">Agent</label>
-          <p-dropdown [options]="agents" optionLabel="user.firstName" formControlName="agentId" id="agentId" required></p-dropdown>
+          <p-dropdown [options]="agents" optionLabel="user.firstName" formControlName="agentId" id="agentId" placeholder="--Select Agent--" required></p-dropdown>
         </div>
         <div class="p-dialog-footer">
           <button pButton type="submit" label="Assign" class="p-button-primary assign-btn"></button>

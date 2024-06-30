@@ -91,7 +91,7 @@ namespace TicketDesk.API.Controllers
             return BadRequest("Failed to update ticket.");
         }
 
-        [HttpDelete("deleteTicket/{ticketId}")]
+        [HttpDelete("delete/{ticketId}")]
         public async Task<IActionResult> DeleteTicket(Guid ticketId)
         {
             var result = await _ticketService.DeleteTicketAsync(ticketId);

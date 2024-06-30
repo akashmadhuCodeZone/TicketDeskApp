@@ -62,7 +62,7 @@ namespace TicketDesk.API.Controllers
                 var result = await _agentService.CreateAgentAsync(agentDTO);
                 if (result)
                 {
-                    return Ok("Agent created successfully.");
+                    return Ok();
                 }
                 return BadRequest("Failed to create agent.");
             }

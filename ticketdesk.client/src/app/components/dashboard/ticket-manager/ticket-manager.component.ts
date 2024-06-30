@@ -145,6 +145,7 @@ export class TicketManagerComponent implements OnInit {
     try {
       await this.ticketService.deleteTicket(ticketId);
       await this.loadTickets();
+      this.ngOnInit();
     } catch (error) {
       console.error('Error deleting ticket', error);
     }

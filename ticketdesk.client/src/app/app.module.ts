@@ -22,6 +22,7 @@ import { ButtonModule } from 'primeng/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { FooterComponent } from './components/footer/footer.component';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
@@ -35,7 +36,8 @@ export function tokenGetter() {
     AgentManagerComponent,
     TicketManagerComponent,
     UserProfileComponent,
-    CustomerRegistrationComponent
+    CustomerRegistrationComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

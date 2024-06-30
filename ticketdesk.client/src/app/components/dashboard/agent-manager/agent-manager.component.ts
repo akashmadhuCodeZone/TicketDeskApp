@@ -90,8 +90,10 @@ export class AgentManagerComponent implements OnInit {
 
       if (this.isEditMode) {
         await this.agentService.updateAgent(agent);
+        this.ngOnInit();
       } else {
         await this.agentService.createAgent(agent);
+        this.ngOnInit()
       }
 
       await this.loadAgents();
