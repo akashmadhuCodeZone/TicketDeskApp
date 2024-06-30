@@ -54,7 +54,7 @@ export class TicketService {
   // Fetch a single ticket by ID
   async getTicketById(ticketId: string): Promise<TicketsDTO> {
     try {
-      return await firstValueFrom(this.http.get<TicketsDTO>(`${this.apiUrl}/ticket/${ticketId}`));
+      return await firstValueFrom(this.http.get<TicketsDTO>(`${this.apiUrl}/ticketId/${ticketId}`));
     } catch (error) {
       console.error('Error fetching ticket by ID', error);
       throw error;

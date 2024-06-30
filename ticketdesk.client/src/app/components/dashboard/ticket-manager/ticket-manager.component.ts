@@ -58,7 +58,7 @@ export class TicketManagerComponent implements OnInit {
       if (this.role === 'Admin') {
         this.tickets = await this.ticketService.getAllTicketsWithAgent();
       } else if (this.role === 'Agent') {
-        const agentId = this.extensionService.getUserId(); // Assuming the auth service provides the user ID
+        const agentId = this.extensionService.getUserId(); 
         this.tickets = await this.agentService.getTicketsByAgent(agentId);
       } else {
         const userId = this.extensionService.getUserId();
@@ -97,14 +97,18 @@ export class TicketManagerComponent implements OnInit {
     try {
       const ticket: Partial<TicketsDTO> = {
         ticketId: this.ticketForm.value.ticketId,
-        ticketTitle: this.ticketForm.value.ticketTitle,
-        ticketDescription: this.ticketForm.value.ticketDescription,
+        ticketTitle: this.ticketForm.controls['ticketTitle'].value ,
+        ticketDescription: this.ticketForm.controls['ticketDescription'].value,
         statusId: this.ticketForm.value.statusId.value,
-        agentId: this.ticketForm.value.agentId
+        agentId: this.ticketForm.value.agentId,
+        createdBy: localStorage.getItem('userId')
       };
-      console.log("this.ticketForm.value.statusId", this.ticketForm.value.statusId.value)
+      console.log("this.ticketForm.value.statusId", this.ticketForm.controls['ticketDescription'].value)
 
       if (this.isEditMode) {
+        console.log(this.ticketForm.value.ticketDescription);
+        console.log(this.ticketForm.value.ticketTitle);
+        console.log(this.ticketForm.value);
         await this.ticketService.updateTicket(ticket);
       } else {
         await this.ticketService.createTicket(ticket);
@@ -112,6 +116,7 @@ export class TicketManagerComponent implements OnInit {
 
       await this.loadTickets();
       this.displayDialog = false;
+      this.ngOnInit();
     } catch (error) {
       console.error('Error saving ticket', error);
     }
@@ -121,6 +126,7 @@ export class TicketManagerComponent implements OnInit {
     this.isEditMode = true;
     try {
       const ticket = await this.ticketService.getTicketById(ticketId);
+      console.log("ticket", ticket)
       this.ticketForm.patchValue({
         ticketId: ticket.ticketId,
         ticketTitle: ticket.ticketTitle,
@@ -128,6 +134,7 @@ export class TicketManagerComponent implements OnInit {
         statusId: ticket.statusId,
         agentId: ticket.agentId
       });
+      console.log(this.ticketForm)
       this.displayDialog = true;
     } catch (error) {
       console.error('Error fetching ticket details', error);

@@ -294,7 +294,7 @@ namespace TicketDesk.DAL.Domain
                 using (var command = new SqlCommand("usp_GetTicketsByAgent", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add(new SqlParameter("@AgentId", agentId));
+                    command.Parameters.Add(new SqlParameter("@UserId", agentId));
 
                     await connection.OpenAsync();
 
