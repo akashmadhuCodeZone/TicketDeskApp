@@ -1,5 +1,6 @@
 ﻿using TicketDesk.Core.Interfaces.Registeration;
 using TicketDesk.DAL.Domain;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.Customer;
 
 namespace TicketDesk.Core.Services.Registeration
@@ -7,8 +8,8 @@ namespace TicketDesk.Core.Services.Registeration
     public class RegisterationService : IRegisterationService
     {
 
-        private readonly RegisterationDataAccess _registerationDataAccess;
-        public RegisterationService(RegisterationDataAccess registerationDataAccess)
+        private readonly IRegisterationDataAccess _registerationDataAccess;
+        public RegisterationService(IRegisterationDataAccess registerationDataAccess)
         {
             _registerationDataAccess = registerationDataAccess;
         }

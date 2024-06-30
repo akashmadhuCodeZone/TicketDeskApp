@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using TicketDesk.Core.Interfaces.Login;
 using TicketDesk.DAL.Domain;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO;
 using TicketDesk.DTO.Login;
 
@@ -10,9 +11,9 @@ namespace TicketDesk.Core.Services.Login
     public class LoginService : ILoginService
     {
         private readonly IConfiguration _configuration;
-        private readonly LoginDataAccess _loginDataAccess;
+        private readonly ILoginDataAccess _loginDataAccess;
 
-        public LoginService(IConfiguration configuration,LoginDataAccess loginDataAccess)
+        public LoginService(IConfiguration configuration,ILoginDataAccess loginDataAccess)
         {
             _configuration = configuration;
             _loginDataAccess = loginDataAccess;

@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.Login;
 
 namespace TicketDesk.DAL.Domain
 {
-    public class LoginDataAccess
+    public class LoginDataAccess:ILoginDataAccess
     {
         private readonly string _connectionString;
 

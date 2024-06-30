@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { TicketsDTO } from '../../../model/TicketDTO';
 
 @Injectable({
@@ -11,83 +12,77 @@ export class TicketService {
 
   constructor(private http: HttpClient) { }
 
-  // Fetch tickets by user ID
+  private createHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found. Please log in again.');
+    }
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   async getAllTicketsByUser(userId: string | null): Promise<TicketsDTO[]> {
-    try {
-      return await firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}/user/${userId}`));
-    } catch (error) {
-      console.error('Error fetching tickets by user', error);
-      throw error;
+    if (!userId) {
+      throw new Error('No user ID provided');
     }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}/user/${userId}`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
-  // Create a new ticket
   async createTicket(ticket: Partial<TicketsDTO>): Promise<void> {
-    try {
-      await firstValueFrom(this.http.post<void>(this.apiUrl, ticket));
-    } catch (error) {
-      console.error('Error creating ticket', error);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.post<void>(`${this.apiUrl}/create`, ticket, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
-  // Update an existing ticket
   async updateTicket(ticket: Partial<TicketsDTO>): Promise<void> {
-    try {
-      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/${ticket.ticketId}`, ticket));
-    } catch (error) {
-      console.error('Error updating ticket', error);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.put<void>(`${this.apiUrl}/${ticket.ticketId}`, ticket, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
-  // Delete a ticket by ID
   async deleteTicket(ticketId: string): Promise<void> {
-    try {
-      await firstValueFrom(this.http.delete<void>(`${this.apiUrl}/delete/${ticketId}`));
-    } catch (error) {
-      console.error('Error deleting ticket', error);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.delete<void>(`${this.apiUrl}/delete/${ticketId}`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
-  // Fetch a single ticket by ID
   async getTicketById(ticketId: string): Promise<TicketsDTO> {
-    try {
-      return await firstValueFrom(this.http.get<TicketsDTO>(`${this.apiUrl}/ticketId/${ticketId}`));
-    } catch (error) {
-      console.error('Error fetching ticket by ID', error);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.get<TicketsDTO>(`${this.apiUrl}/ticketId/${ticketId}`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
-  // Fetch all tickets
   async getAllTickets(): Promise<TicketsDTO[]> {
-    try {
-      return await firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}`));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.get<TicketsDTO[]>(this.apiUrl, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
   async getAllTicketsWithAgent(): Promise<TicketsDTO[]> {
-    try {
-      return await firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}/ticketsWithAgent`));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}/ticketsWithAgent`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
-  // Error handling method
-  private handleError(error: HttpErrorResponse): void {
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
+  private handleError(error: unknown): never {
+    console.error('Error in TicketService:', error);
+    if (error instanceof HttpErrorResponse) {
+      throw new Error(`Backend returned code ${error.status}, body was: ${JSON.stringify(error.error)}`);
+    } else if (error instanceof Error) {
+      throw new Error(`Client Error: ${error.message}`);
     } else {
-      // The backend returned an unsuccessful response code.
-      console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+      throw new Error('Unexpected error occurred.');
     }
   }
 }

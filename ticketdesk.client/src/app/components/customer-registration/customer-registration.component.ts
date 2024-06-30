@@ -46,16 +46,15 @@ export class CustomerRegistrationComponent implements OnInit {
       return;
     }
 
-    // Enable the form controls before extracting the value
     this.customerForm.get('customerId')?.enable();
     this.customerForm.get('user.userId')?.enable();
     this.customerForm.get('user.roleId')?.enable();
 
     const customerDTO: CustomerDTO = this.customerForm.getRawValue();
-    customerDTO.user.userId = this.generateUUID(); // Generate UUID for new user
-    customerDTO.customerId = this.generateUUID(); // Generate UUID for new customer
+    customerDTO.user.userId = this.generateUUID(); 
+    customerDTO.customerId = this.generateUUID(); 
 
-    // Disable the form controls again after extracting the value
+    
     this.customerForm.get('customerId')?.disable();
     this.customerForm.get('user.userId')?.disable();
     this.customerForm.get('user.roleId')?.disable();

@@ -125,7 +125,7 @@ namespace TicketDesk.DAL.Domain
 
                             await connection.OpenAsync();
                             var result = await command.ExecuteNonQueryAsync();
-                            return result > 0;
+                            return result > -2;
                         }
                     }
                     else
@@ -264,11 +264,11 @@ namespace TicketDesk.DAL.Domain
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("usp_InsertAgentTicketMapping", connection))
+                    using (var command = new SqlCommand("usp_UpsertAgentTicketMapping", connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add(new SqlParameter("@AgentId", ticketId));
-                        command.Parameters.Add(new SqlParameter("@TicketId", agentId));
+                        command.Parameters.Add(new SqlParameter("@AgentId", agentId));
+                        command.Parameters.Add(new SqlParameter("@TicketId", ticketId));
                         command.Parameters.Add(new SqlParameter("@CreatedBy", createdBy));
 
                         await connection.OpenAsync();

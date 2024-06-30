@@ -3,14 +3,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TicketDesk.Utility.Security
 {
-    public class JWTTokenGenrator
+    public class JWTTokenGenerator
     {
         private readonly IConfiguration _configuration;
 
-        public JWTTokenGenrator(IConfiguration configuration)
+        public JWTTokenGenerator(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -19,23 +20,23 @@ namespace TicketDesk.Utility.Security
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
 
-            var secretKey = jwtSettings["SecretKey"];
+            var secretKey = jwtSettings["SecretKey"]; // Assume this is a plain string
             var issuer = jwtSettings["Issuer"];
             var audience = jwtSettings["Audience"];
             var expiryMinutes = Convert.ToInt32(jwtSettings["ExpiryMinutes"]);
 
-            var keyBytes = Convert.FromHexString(secretKey);
+            var keyBytes = Encoding.UTF8.GetBytes(secretKey); // Convert key to bytes
             var securityKey = new SymmetricSecurityKey(keyBytes);
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, userId),
-        new Claim(JwtRegisteredClaimNames.UniqueName, email),
-        new Claim(JwtRegisteredClaimNames.Email, email), // Assuming username is the email
-        new Claim(ClaimTypes.Role, roles), // Ensure role is added here
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.UniqueName, email),
+                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(ClaimTypes.Role, roles),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
             var token = new JwtSecurityToken(
                 issuer: issuer,
@@ -46,7 +47,5 @@ namespace TicketDesk.Utility.Security
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-
     }
 }

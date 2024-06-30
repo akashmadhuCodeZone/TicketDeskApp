@@ -108,14 +108,11 @@ export class TicketManagerComponent implements OnInit {
         agentId: this.ticketForm.value.agentId,
         createdBy: localStorage.getItem('userId')
       };
-      console.log("this.ticketForm.value.statusId", this.ticketForm.controls['ticketDescription'].value)
 
       if (this.isEditMode) {
-        console.log(this.ticketForm.value.ticketDescription);
-        console.log(this.ticketForm.value.ticketTitle);
-        console.log(this.ticketForm.value);
         await this.ticketService.updateTicket(ticket);
       } else {
+        console.log(ticket)
         await this.ticketService.createTicket(ticket);
       }
 
@@ -139,7 +136,6 @@ export class TicketManagerComponent implements OnInit {
         statusId: ticket.statusId,
         agentId: ticket.agentId
       });
-      console.log(this.ticketForm)
       this.displayDialog = true;
     } catch (error) {
       console.error('Error fetching ticket details', error);

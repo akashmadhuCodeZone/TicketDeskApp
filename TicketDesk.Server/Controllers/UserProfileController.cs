@@ -3,18 +3,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketDesk.Core.Interfaces;
 using TicketDesk.DTO.UserProfile;
+using System;
+using System.Threading.Tasks;
+using TicketDesk.Core.Services.UserProfile;
 
 namespace TicketDesk.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] 
     public class UserProfileController : ControllerBase
     {
-        private readonly IUserPorofileService _userProfileService;
+        private readonly IUserProfileService _userProfileService;
 
-        public UserProfileController(IUserPorofileService userPorofileService)
+        public UserProfileController(IUserProfileService userProfileService)
         {
-            _userProfileService = userPorofileService;
+            _userProfileService = userProfileService;
         }
 
         [HttpGet("{userId}")]
@@ -29,12 +33,11 @@ namespace TicketDesk.Server.Controllers
                 }
                 return Ok(userProfile);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                // Log the exception (use a logging framework like Serilog, NLog, etc.)
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
             }
-            
         }
 
         [HttpGet("byUserId/{userId}")]
@@ -49,12 +52,11 @@ namespace TicketDesk.Server.Controllers
                 }
                 return Ok(userProfile);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                // Log the exception (use a logging framework like Serilog, NLog, etc.)
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
             }
-            
         }
 
         [HttpPut("{profileId}/{userId}")]
@@ -75,12 +77,11 @@ namespace TicketDesk.Server.Controllers
                 }
                 return BadRequest("Failed to update user profile.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                // Log the exception (use a logging framework like Serilog, NLog, etc.)
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
             }
-            
         }
     }
 }

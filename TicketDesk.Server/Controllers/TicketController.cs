@@ -7,6 +7,7 @@ namespace TicketDesk.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;
@@ -60,7 +61,7 @@ namespace TicketDesk.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateTicket([FromBody] TicketsDTO ticket)
         {
             if (ticket == null)

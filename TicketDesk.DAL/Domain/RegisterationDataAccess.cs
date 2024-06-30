@@ -1,11 +1,12 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.Customer;
 using TicketDesk.DTO.User;
 
 namespace TicketDesk.DAL.Domain
 {
-    public class RegisterationDataAccess
+    public class RegisterationDataAccess:IRegisterationDataAccess
     {
         private readonly string _connectionString;
 

@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using TicketDesk.Core.Interfaces;
 using TicketDesk.DAL.Domain;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.UserProfile;
 
 namespace TicketDesk.Core.Services.UserProfile
 {
-    public class UserProfileService : IUserPorofileService
+    public class UserProfileService : IUserProfileService
     {
-        private readonly UserProfileDataAccess _userProfileDataAccess;
-        public UserProfileService(UserProfileDataAccess userProfileDataAccess)
+        private readonly IUserProfileDataAccess _userProfileDataAccess;
+        public UserProfileService(IUserProfileDataAccess userProfileDataAccess)
         {
                 _userProfileDataAccess = userProfileDataAccess;
         }

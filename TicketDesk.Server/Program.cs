@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TicketDesk.Core.Interfaces;
@@ -7,6 +10,7 @@ using TicketDesk.Core.Interfaces.Login;
 using TicketDesk.Core.Interfaces.MasterData;
 using TicketDesk.Core.Interfaces.Registeration;
 using TicketDesk.Core.Interfaces.Tickets;
+using TicketDesk.Core.Services;
 using TicketDesk.Core.Services.Agent;
 using TicketDesk.Core.Services.Login;
 using TicketDesk.Core.Services.MasterData;
@@ -19,132 +23,106 @@ using TicketDesk.Utility.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .Build();
+// Setup configuration access
+var configuration = builder.Configuration;
 
-// Add services to the container.
+// Add controllers and API documentation services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TicketDesk.Server", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Title = "TicketDesk.Server",
-        Version = "v1"
+        Description = "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            },
+            new string[] {}
+        }
     });
 });
 
-// Register data access services
-builder.Services.AddScoped<RegisterationDataAccess>(sp =>
-    new RegisterationDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<LoginDataAccess>(sp =>
-    new LoginDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<UserProfileDataAccess>(sp =>
-    new UserProfileDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<TicketDataAccess>(sp =>
-    new TicketDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<MasterDataAccess>(sp =>
-    new MasterDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<AgentDataAccess>(sp =>
-    new AgentDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IAgentDataAccess>(sp =>
-    new AgentDataAccess(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-// Register business services
-builder.Services.AddScoped<IRegisterationService, RegisterationService>();
+// Dependency Injection for data access and services
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddScoped<IAgentDataAccess, AgentDataAccess>(_ => new AgentDataAccess(connectionString));
+builder.Services.AddScoped<IRegisterationDataAccess, RegisterationDataAccess>(_ => new RegisterationDataAccess(connectionString));
+builder.Services.AddScoped<IUserProfileDataAccess, UserProfileDataAccess>(_ => new UserProfileDataAccess(connectionString));
+builder.Services.AddScoped<IMasterDataAccess, MasterDataAccess>(_ => new MasterDataAccess(connectionString));
+builder.Services.AddScoped<ITicketDataAccess, TicketDataAccess>(_ => new TicketDataAccess(connectionString));
+builder.Services.AddScoped<ILoginDataAccess, LoginDataAccess>(_ => new LoginDataAccess(connectionString));
+// Continue adding other data access classes and services
 builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddScoped<IUserPorofileService, UserProfileService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IMasterDataService, MasterDataService>();
+builder.Services.AddScoped<IRegisterationService, RegisterationService>();
 
-builder.Services.AddHttpClient("NoSslValidationClient")
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-    });
+// Register JWT token generator
+builder.Services.AddScoped<JWTTokenGenerator>();
 
 // Configure JWT authentication
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var jwtSettings = configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
-var keyBytes = Encoding.UTF8.GetBytes(secretKey); // Correctly handle the key as UTF8 bytes
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
-    };
-});
+        options.RequireHttpsMetadata = false; // Consider enabling in production
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        };
+    });
 
-// Register the JWT token service
-builder.Services.AddScoped<JWTTokenGenrator>();
-
-// Configure CORS
+// CORS setup for allowing requests from any origin
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins",
-        builderCors =>
-        {
-            builderCors.AllowAnyOrigin()
-                       .AllowAnyHeader()
-                       .AllowAnyMethod();
-        });
-
+    options.AddPolicy("AllowAllOrigins", builderCors =>
+    {
+        builderCors.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
 });
 
-// Configure distributed memory cache for session management
-builder.Services.AddDistributedMemoryCache(); // Add this line to configure in-memory cache
-
-// Configure session
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(600);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
+// Build the application
 var app = builder.Build();
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-// Configure the HTTP request pipeline.
+// Middleware configuration
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // Enable developer exception page for detailed errors
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicketDesk.Server v1"));
 }
 
 app.UseHttpsRedirection();
-app.UseRouting(); // Ensure this is added before authentication and authorization
-
+app.UseStaticFiles();
+app.UseRouting();
 app.UseCors("AllowAllOrigins");
-
-app.UseAuthentication(); // Add this line to enable authentication
+app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession(); // Add this line to enable session
-
 app.MapControllers();
-app.MapFallbackToFile("/index.html");
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
-
 app.Run();

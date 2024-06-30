@@ -7,7 +7,7 @@ using TicketDesk.DTO.UserProfile;
 
 namespace TicketDesk.Core.Interfaces
 {
-    public interface IUserPorofileService
+    public interface IUserProfileService
     {
         Task<UserProfileDTO> GetUserProfileAsync(Guid profileId);
         Task<UserProfileDTO> GetUserProfileByUserIdAsync(Guid userId);

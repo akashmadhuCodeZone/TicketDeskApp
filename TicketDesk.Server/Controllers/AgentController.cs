@@ -9,6 +9,7 @@ namespace TicketDesk.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AgentController : ControllerBase
     {
         private readonly IAgentService _agentService;

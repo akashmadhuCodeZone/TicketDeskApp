@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.MasterData;
 
 namespace TicketDesk.DAL.Domain
 {
-    public class MasterDataAccess
+    public class MasterDataAccess:IMasterDataAccess
     {
         private readonly string _connectionString;
 

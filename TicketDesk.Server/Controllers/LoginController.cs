@@ -11,8 +11,8 @@ namespace TicketDesk.Server.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILoginService _loginService;
-        private readonly JWTTokenGenrator _jWTTokenGenrator;
-        public LoginController(ILoginService loginService, JWTTokenGenrator jWTTokenGenrator)
+        private readonly JWTTokenGenerator _jWTTokenGenrator;
+        public LoginController(ILoginService loginService, JWTTokenGenerator jWTTokenGenrator)
         {
             _loginService = loginService;
             _jWTTokenGenrator = jWTTokenGenrator;

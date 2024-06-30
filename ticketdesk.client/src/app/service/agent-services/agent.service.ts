@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AgentDTO } from '../../../model/AgentDTO';
 import { TicketsDTO } from '../../../model/TicketDTO';
 
@@ -12,87 +13,75 @@ export class AgentService {
 
   constructor(private http: HttpClient) { }
 
-  async getAllAgents(): Promise<AgentDTO[]> {
-    try {
-      return await firstValueFrom(this.http.get<AgentDTO[]>(this.apiUrl));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
+  private createHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found. Please log in again.');
     }
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
   }
 
-  async getAgentsPaginated(page: number, size: number): Promise<{ data: AgentDTO[], totalRecords: number }> {
-    try {
-      return await firstValueFrom(this.http.get<{ data: AgentDTO[], totalRecords: number }>(`${this.apiUrl}/paginated?page=${page}&size=${size}`));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+  async getAllAgents(): Promise<AgentDTO[]> {
+    const headers = this.createHeaders();
+    return await firstValueFrom(this.http.get<AgentDTO[]>(this.apiUrl, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
   async createAgent(agent: Partial<AgentDTO>): Promise<void> {
-    try {
-      await firstValueFrom(this.http.post<void>(`${this.apiUrl}/create`, agent));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.post<void>(this.apiUrl +'/create', agent, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
   async updateAgent(agent: Partial<AgentDTO>): Promise<void> {
-    try {
-      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/${agent.agentId}`, agent));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.put<void>(`${this.apiUrl}/${agent.agentId}`, agent, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
   async deleteAgent(agentId: string): Promise<void> {
-    try {
-      await firstValueFrom(this.http.delete<void>(`${this.apiUrl}/${agentId}`));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.delete<void>(`${this.apiUrl}/${agentId}`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
   async getAgentById(agentId: string): Promise<AgentDTO> {
-    try {
-      return await firstValueFrom(this.http.get<AgentDTO>(`${this.apiUrl}/${agentId}`));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
-  }
-
-  async assignAgentToTicket(agentId: string, ticketId: string,userId:string|null): Promise<void> {
-    try {
-      const assignAgentDto = { agentId,ticketId, userId };
-      console.log("agentId, ticketId", agentId, ticketId)
-      await firstValueFrom(this.http.post<void>(`${this.apiUrl}/assign`, assignAgentDto));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
-    }
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.get<AgentDTO>(`${this.apiUrl}/${agentId}`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
   }
 
   async getTicketsByAgent(agentId: string): Promise<TicketsDTO[]> {
-    try {
-      return await firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}/tickets/${agentId}`));
-    } catch (error) {
-      this.handleError(error as HttpErrorResponse);
-      throw error;
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.get<TicketsDTO[]>(`${this.apiUrl}/tickets/${agentId}`, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
+  }
+
+  async assignAgentToTicket(ticketId: string, agentId: string, userId: string | null): Promise<void> {
+    const headers = this.createHeaders();
+    return firstValueFrom(this.http.post<void>(`${this.apiUrl}/assign`, { ticketId, agentId, userId }, { headers }).pipe(
+      catchError(async (error) => this.handleError(error))
+    ));
+  }
+
+  private handleError(error: unknown): never {
+    console.error('Error in AgentService:', error);
+    if (error instanceof HttpErrorResponse) {
+      throw new Error(`Backend returned code ${error.status}, body was: ${JSON.stringify(error.error)}`);
+    } else if (error instanceof Error) {
+      throw new Error(`Client Error: ${error.message}`);
+    } else {
+      throw new Error('Unexpected error occurred.');
     }
   }
 
-  private handleError(error: HttpErrorResponse): void {
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
-    } else {
-      // The backend returned an unsuccessful response code.
-      console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
-    }
-  }
 }

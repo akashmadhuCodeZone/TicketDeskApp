@@ -1,13 +1,14 @@
 ﻿using TicketDesk.Core.Interfaces.Tickets;
 using TicketDesk.DAL.Domain;
+using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.Tickets;
 
 namespace TicketDesk.Core.Services.Tickets
 {
     public class TicketService : ITicketService
     {
-        private readonly TicketDataAccess _ticketDataAccess;
-        public TicketService(TicketDataAccess ticketDataAccess)
+        private readonly ITicketDataAccess _ticketDataAccess;
+        public TicketService(ITicketDataAccess ticketDataAccess)
         {
             _ticketDataAccess = ticketDataAccess;
         }

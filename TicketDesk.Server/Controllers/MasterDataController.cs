@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketDesk.Core.Interfaces.MasterData;
 using TicketDesk.DTO.MasterData;
@@ -7,6 +8,7 @@ namespace TicketDesk.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MasterDataController : ControllerBase
     {
         private readonly IMasterDataService _masterDataService;

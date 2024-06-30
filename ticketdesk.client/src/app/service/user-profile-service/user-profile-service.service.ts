@@ -7,12 +7,16 @@ import { UserProfileDTO } from '../../../model/UserProfileDTO';
   providedIn: 'root'
 })
 export class UserProfileService {
-  private apiUrl = 'https://localhost:7290/api'; // Replace with your actual API URL
+  private apiUrl = 'https://localhost:7290/api';
 
   constructor(private http: HttpClient) { }
 
   private createHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('No token found');
+    }
 
     return new HttpHeaders({
       'Content-Type': 'application/json',
@@ -21,34 +25,40 @@ export class UserProfileService {
   }
 
   async getUserProfile(userId: string | null): Promise<UserProfileDTO> {
+    if (!userId) {
+      throw new Error('No user ID provided');
+    }
+
     try {
-      const headers = this.createHeaders()
-      
+      const headers = this.createHeaders();
+
       console.log('Headers:', headers);
 
       const response = await firstValueFrom(this.http.get<UserProfileDTO>(`${this.apiUrl}/userprofile/${userId}`, { headers }));
       return response;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
-        
         console.error('Error fetching user profile:', error.message);
       }
       throw error;
     }
   }
 
-  async updateUserProfile(profileId: string|null,userId:string|null, userProfile: UserProfileDTO): Promise<void> {
+  async updateUserProfile(profileId: string | null, userId: string | null, userProfile: UserProfileDTO): Promise<void> {
+    if (!profileId || !userId) {
+      throw new Error('Profile ID and/or User ID not provided');
+    }
+
     try {
-      const headers = this.createHeaders()
+      const headers = this.createHeaders();
 
       console.log('Headers:', headers);
-      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/userprofile/${profileId}/${userId}`, userProfile, {headers}));
+      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/userprofile/${profileId}/${userId}`, userProfile, { headers }));
     } catch (error) {
-      console.error('Error updating user profile', error);
+      if (error instanceof HttpErrorResponse) {
+        console.error('Error updating user profile:', error.message);
+      }
       throw error;
     }
   }
-
 }
-
-

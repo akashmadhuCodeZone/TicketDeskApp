@@ -9,7 +9,6 @@
         <th>Last Name</th>
         <th>Phone Number</th>
         <th>Email Address</th>
-        <th>Role ID</th>
         <th>Actions</th>
       </tr>
     </ng-template>
@@ -19,7 +18,6 @@
         <td>{{ agent.user.lastName }}</td>
         <td>{{ agent.user.phoneNumber }}</td>
         <td>{{ agent.user.emailAddress }}</td>
-        <td>{{ agent.user.roleId }}</td>
         <td>
           <button pButton type="button" icon="pi pi-pencil" class="p-button-warning mr-2" (click)="editAgent(agent.agentId)"></button>
           <button pButton type="button" icon="pi pi-trash" class="p-button-danger" (click)="confirmDelete(agent.agentId)"></button>
