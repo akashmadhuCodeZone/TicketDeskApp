@@ -99,9 +99,10 @@ export class TicketManagerComponent implements OnInit {
         ticketId: this.ticketForm.value.ticketId,
         ticketTitle: this.ticketForm.value.ticketTitle,
         ticketDescription: this.ticketForm.value.ticketDescription,
-        statusId: this.ticketForm.value.statusId,
+        statusId: this.ticketForm.value.statusId.value,
         agentId: this.ticketForm.value.agentId
       };
+      console.log("this.ticketForm.value.statusId", this.ticketForm.value.statusId.value)
 
       if (this.isEditMode) {
         await this.ticketService.updateTicket(ticket);

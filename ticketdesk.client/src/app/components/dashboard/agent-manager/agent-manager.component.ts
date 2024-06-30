@@ -123,6 +123,7 @@ export class AgentManagerComponent implements OnInit {
     try {
       await this.agentService.deleteAgent(agentId);
       await this.loadAgents();
+
     } catch (error) {
       console.error('Error deleting agent', error);
     }

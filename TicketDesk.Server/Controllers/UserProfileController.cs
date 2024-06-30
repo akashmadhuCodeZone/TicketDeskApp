@@ -70,7 +70,7 @@ namespace TicketDesk.Server.Controllers
                 var result = await _userProfileService.UpdateUserProfileAsync(profile);
                 if (result)
                 {
-                    return Ok("User profile updated successfully.");
+                    return Ok();
                 }
                 return BadRequest("Failed to update user profile.");
             }

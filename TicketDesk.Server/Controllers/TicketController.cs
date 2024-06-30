@@ -33,7 +33,7 @@ namespace TicketDesk.API.Controllers
             return Ok(ticket);
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetTicketByUserAsync(Guid userId)
         {
             var ticket = await _ticketService.GetTicketsByUserAsync(userId);

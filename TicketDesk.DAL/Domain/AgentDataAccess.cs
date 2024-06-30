@@ -112,18 +112,25 @@ namespace TicketDesk.DAL.Domain
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("usp_CreateAgent", connection))
+                    if (!await IsUserRegistered(agentDTO.User.EmailAddress, agentDTO.User.PhoneNumber))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add(new SqlParameter("@FirstName", agentDTO.User.FirstName));
-                        command.Parameters.Add(new SqlParameter("@LastName", agentDTO.User.LastName));
-                        command.Parameters.Add(new SqlParameter("@PhoneNumber", agentDTO.User.PhoneNumber));
-                        command.Parameters.Add(new SqlParameter("@Email", agentDTO.User.EmailAddress));
-                        command.Parameters.Add(new SqlParameter("@Password", agentDTO.User.Password));
+                        using (var command = new SqlCommand("usp_CreateAgent", connection))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.Add(new SqlParameter("@FirstName", agentDTO.User.FirstName));
+                            command.Parameters.Add(new SqlParameter("@LastName", agentDTO.User.LastName));
+                            command.Parameters.Add(new SqlParameter("@PhoneNumber", agentDTO.User.PhoneNumber));
+                            command.Parameters.Add(new SqlParameter("@Email", agentDTO.User.EmailAddress));
+                            command.Parameters.Add(new SqlParameter("@Password", agentDTO.User.Password.Encrypt()));
 
-                        await connection.OpenAsync();
-                        var result = await command.ExecuteNonQueryAsync();
-                        return result > 0;
+                            await connection.OpenAsync();
+                            var result = await command.ExecuteNonQueryAsync();
+                            return result > 0;
+                        }
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -134,7 +141,22 @@ namespace TicketDesk.DAL.Domain
             }
 
         }
+        private async Task<bool> IsUserRegistered(string email, long phoneNumber)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            using SqlCommand cmd = new SqlCommand("SELECT COUNT(1) FROM [dbo].[Users] WHERE EmailAddress = @Email OR PhoneNumber = @PhoneNumber", conn)
+            {
+                CommandType = CommandType.Text
+            };
 
+            cmd.Parameters.AddWithValue("@Email", email);
+            cmd.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
+
+            await conn.OpenAsync();
+            int count = (int)await cmd.ExecuteScalarAsync();
+            await conn.CloseAsync();
+            return count > 0;
+        }
         public async Task<bool> UpdateAgentAsync(AgentDTO agentDTO)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -158,17 +180,26 @@ namespace TicketDesk.DAL.Domain
 
         public async Task<bool> DeleteAgentAsync(Guid agentId)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                using (var command = new SqlCommand("usp_DeleteAgent", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add(new SqlParameter("@AgentId", agentId));
 
-                    await connection.OpenAsync();
-                    var result = await command.ExecuteNonQueryAsync();
-                    return result > 0;
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("usp_DeleteAgent", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add(new SqlParameter("@AgentId", agentId));
+
+                        await connection.OpenAsync();
+                        var result = await command.ExecuteNonQueryAsync();
+                        return result > 0;
+                    }
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         public async Task<(IEnumerable<AgentDTO> Data, int TotalRecords)> GetAgentsPaginatedAsync(int page, int size)

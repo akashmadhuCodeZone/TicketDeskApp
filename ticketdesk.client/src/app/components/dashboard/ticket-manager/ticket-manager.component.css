@@ -25,6 +25,7 @@ label {
   color: #495057;
   margin-bottom: 0.5rem;
   display: block; /* Ensure label is displayed as a block element */
+  text-align: center;
 }
 
 /* Input and dropdown styles */
@@ -68,16 +69,47 @@ button.p-button-warning, button.p-button-danger {
     font-weight: bold;
     margin-bottom: 0.5rem;
     display: block; /* Ensure label is displayed as a block element */
+    text-align: center;
   }
 
   .assign-agent-dialog .form-control {
     width: 100%;
   }
 
+  .assign-agent-dialog .p-dialog-footer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 1rem;
+  }
+
+/* Assign and Cancel button styles */
+.assign-btn {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+  .assign-btn:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+  }
+
+.cancel-btn {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+  .cancel-btn:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+  }
+
 /* Style the p-dropdown */
 .ui-dropdown {
   width: 100%; /* Ensure dropdown takes full width */
-  max-width: 250px; /* Limit the maximum width */
+  max-width: 300px; /* Increase the maximum width */
   margin-top: 8px;
 }
 
@@ -107,27 +139,4 @@ button.p-button-warning, button.p-button-danger {
 
   .assign-agent-dialog .p-dialog-footer button {
     width: 48%;
-  }
-
-/* Assign and Cancel button styles */
-.assign-btn {
-  background-color: #007bff;
-  border-color: #007bff;
-  color: #fff;
-}
-
-  .assign-btn:hover {
-    background-color: #0056b3;
-    border-color: #004085;
-  }
-
-.cancel-btn {
-  background-color: #6c757d;
-  border-color: #6c757d;
-  color: #fff;
-}
-
-  .cancel-btn:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
   }
