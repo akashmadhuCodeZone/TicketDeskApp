@@ -236,7 +236,7 @@ namespace TicketDesk.DAL.Domain
 
                 await conn.OpenAsync();
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                return rowsAffected > 0;
+                return rowsAffected > -2;
             }
             catch (Exception ex)
             {

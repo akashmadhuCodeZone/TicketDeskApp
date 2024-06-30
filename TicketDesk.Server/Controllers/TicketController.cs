@@ -94,12 +94,21 @@ namespace TicketDesk.API.Controllers
         [HttpDelete("delete/{ticketId}")]
         public async Task<IActionResult> DeleteTicket(Guid ticketId)
         {
-            var result = await _ticketService.DeleteTicketAsync(ticketId);
-            if (result)
+            try
             {
-                return Ok();
+                var result = await _ticketService.DeleteTicketAsync(ticketId);
+                if (result)
+                {
+                    return Ok();
+                }
+                return BadRequest("Failed to delete ticket.");
             }
-            return BadRequest("Failed to delete ticket.");
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
     }
 }

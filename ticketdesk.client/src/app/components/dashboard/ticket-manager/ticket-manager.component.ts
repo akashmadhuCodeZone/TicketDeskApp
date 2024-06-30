@@ -41,7 +41,7 @@ export class TicketManagerComponent implements OnInit {
       ticketId: [null],
       ticketTitle: [{ value: '', disabled: this.role !== 'Customer' }, Validators.required],
       ticketDescription: [{ value: '', disabled: this.role !== 'Customer' }, Validators.required],
-      statusId: ['', Validators.required],
+      statusId: [{ value: { displayName: 'Open', value: 1 }, disabled: !this.isEditMode }, Validators.required], // Default to 'Open' for new tickets
       agentId: [{ value: null, disabled: this.role !== 'Admin' }] // Field for assigning an agent, only enabled for Admin
     });
 
@@ -58,7 +58,7 @@ export class TicketManagerComponent implements OnInit {
       if (this.role === 'Admin') {
         this.tickets = await this.ticketService.getAllTicketsWithAgent();
       } else if (this.role === 'Agent') {
-        const agentId = this.extensionService.getUserId(); 
+        const agentId = this.extensionService.getUserId();
         this.tickets = await this.agentService.getTicketsByAgent(agentId);
       } else {
         const userId = this.extensionService.getUserId();
@@ -82,6 +82,9 @@ export class TicketManagerComponent implements OnInit {
     this.isEditMode = false;
     this.ticketForm.reset();
     this.submitted = false;
+    this.ticketForm.patchValue({
+      statusId: { displayName: 'Open', value: 1 } // Set default status to 'Open'
+    });
   }
 
   get f() {
@@ -95,11 +98,13 @@ export class TicketManagerComponent implements OnInit {
     }
 
     try {
+      const statusIdValue = this.ticketForm.controls['statusId'].value?.value || 1; // Default to 1 if undefined or null
+
       const ticket: Partial<TicketsDTO> = {
         ticketId: this.ticketForm.value.ticketId,
-        ticketTitle: this.ticketForm.controls['ticketTitle'].value ,
+        ticketTitle: this.ticketForm.controls['ticketTitle'].value,
         ticketDescription: this.ticketForm.controls['ticketDescription'].value,
-        statusId: this.ticketForm.value.statusId.value,
+        statusId: statusIdValue,
         agentId: this.ticketForm.value.agentId,
         createdBy: localStorage.getItem('userId')
       };
@@ -144,8 +149,8 @@ export class TicketManagerComponent implements OnInit {
   async deleteTicket(ticketId: string): Promise<void> {
     try {
       await this.ticketService.deleteTicket(ticketId);
-      await this.loadTickets();
       this.ngOnInit();
+      await this.loadTickets();
     } catch (error) {
       console.error('Error deleting ticket', error);
     }
