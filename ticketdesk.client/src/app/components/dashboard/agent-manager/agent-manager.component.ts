@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfirmationService } from 'primeng/api';
 import { AgentService } from '../../../service/agent-services/agent.service';
 import { AgentDTO } from '../../../../model/AgentDTO';
-import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-agent-manager',
@@ -28,17 +28,17 @@ export class AgentManagerComponent implements OnInit {
     private confirmationService: ConfirmationService
   ) { }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.agentForm = this.formBuilder.group({
       agentId: [null],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.maxLength(10), Validators.pattern(/^[0-9]*$/)]],
       emailAddress: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
 
-    await this.loadAgents();
+    this.loadAgents();
   }
 
   async loadAgents(): Promise<void> {
@@ -79,21 +79,19 @@ export class AgentManagerComponent implements OnInit {
       return;
     }
 
-    try {
-      const agent: Partial<AgentDTO> = {
-        agentId: this.agentForm.value.agentId,
-        user: {
-          ...this.agentForm.value,
-          roleId: 4 // Set roleId to 4
-        }
-      };
+    const agent: Partial<AgentDTO> = {
+      agentId: this.agentForm.value.agentId,
+      user: {
+        ...this.agentForm.value,
+        roleId: 4 
+      }
+    };
 
+    try {
       if (this.isEditMode) {
         await this.agentService.updateAgent(agent);
-        this.ngOnInit();
       } else {
         await this.agentService.createAgent(agent);
-        this.ngOnInit()
       }
 
       await this.loadAgents();
@@ -125,7 +123,6 @@ export class AgentManagerComponent implements OnInit {
     try {
       await this.agentService.deleteAgent(agentId);
       await this.loadAgents();
-
     } catch (error) {
       console.error('Error deleting agent', error);
     }
@@ -138,5 +135,13 @@ export class AgentManagerComponent implements OnInit {
         this.deleteAgent(agentId);
       }
     });
+  }
+
+  validateNumber(event: KeyboardEvent): void {
+    const pattern = /[0-9]/;
+    const inputChar = String.fromCharCode(event.charCode);
+    if (!pattern.test(inputChar)) {
+      event.preventDefault();
+    }
   }
 }
