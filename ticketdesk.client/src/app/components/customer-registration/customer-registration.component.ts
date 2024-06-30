@@ -27,10 +27,10 @@ export class CustomerRegistrationComponent implements OnInit {
         userId: [{ value: '', disabled: true }],
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],
-        phoneNumber: ['', Validators.required],
+        phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
         emailAddress: ['', [Validators.required, Validators.email]],
         password: ['', Validators.required],
-        roleId: [{ value: 4, disabled: true }]  // Assuming 3 is the role ID for customers
+        roleId: [{ value: 4, disabled: true }]  // Assuming 4 is the role ID for customers
       })
     });
   }

@@ -6,29 +6,47 @@
         <div class="form-group">
           <label for="firstName">First Name</label>
           <input type="text" class="form-control" id="firstName" formControlName="firstName" required>
+          <div *ngIf="submitted && f['user']!.get('firstName')?.errors" class="invalid-feedback">
+            <div *ngIf="f['user']!.get('firstName')?.errors!['required']">First Name is required</div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="lastName">Last Name</label>
           <input type="text" class="form-control" id="lastName" formControlName="lastName" required>
+          <div *ngIf="submitted && f['user']!.get('lastName')?.errors" class="invalid-feedback">
+            <div *ngIf="f['user']!.get('lastName')?.errors!['required']">Last Name is required</div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="phoneNumber">Phone Number</label>
-          <input type="text" class="form-control" id="phoneNumber" formControlName="phoneNumber" required>
+          <input type="text" class="form-control" id="phoneNumber" formControlName="phoneNumber" required maxlength="10" pattern="^\d{10}$">
+          <div *ngIf="submitted && f['user']!.get('phoneNumber')?.errors" class="invalid-feedback">
+            <div *ngIf="f['user']!.get('phoneNumber')?.errors!['required']">Phone Number is required</div>
+            <div *ngIf="f['user']!.get('phoneNumber')?.errors!['pattern']">Phone Number must be 10 digits</div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="emailAddress">Email Address</label>
           <input type="email" class="form-control" id="emailAddress" formControlName="emailAddress" required>
+          <div *ngIf="submitted && f['user']!.get('emailAddress')?.errors" class="invalid-feedback">
+            <div *ngIf="f['user']!.get('emailAddress')?.errors!['required']">Email Address is required</div>
+            <div *ngIf="f['user']!.get('emailAddress')?.errors!['email']">Email Address must be a valid email</div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
           <input type="password" class="form-control" id="password" formControlName="password" required>
+          <div *ngIf="submitted && f['user']!.get('password')?.errors" class="invalid-feedback">
+            <div *ngIf="f['user']!.get('password')?.errors!['required']">Password is required</div>
+          </div>
         </div>
       </div>
       <button type="submit" class="btn btn-primary">Register</button>
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
     </form>
   </div>
 </div>

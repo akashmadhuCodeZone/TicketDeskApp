@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { FooterComponent } from './components/footer/footer.component';
+import { AuthInterceptor } from './service/auth.interceptor';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
@@ -59,7 +60,7 @@ export function tokenGetter() {
       }
     })
   ],
-  providers: [AuthService, AuthGuard, JwtHelperService, ConfirmationService],
+  providers: [AuthService, AuthGuard, JwtHelperService, ConfirmationService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
