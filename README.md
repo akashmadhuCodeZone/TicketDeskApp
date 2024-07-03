@@ -69,7 +69,7 @@ ng serve
 The frontend will start running at `http://localhost:4200`.
 Usage
 Registration
-- Register a new user through the registration form.
+- Register a new Customer through the registration form.
 - Depending on the role selected (Agent, Customer), additional entries will be created in corresponding tables.
 Login
 - Login using the registered email and password.
@@ -79,53 +79,9 @@ Ticket Management
 - Agents can view and manage tickets assigned to them.
 User Profile
 - View and update user profile information.
-- Admins can manage all user profiles.
-Database Schema
-Tables
-Users
-| Column         | Type            | Description                |
-|----------------|-----------------|----------------------------|
-| UserId         | UNIQUEIDENTIFIER| Primary key                |
-| FirstName      | NVARCHAR(50)    | User's first name          |
-| LastName       | NVARCHAR(50)    | User's last name           |
-| EmailAddress   | NVARCHAR(100)   | User's email address       |
-| PhoneNumber    | BIGINT          | User's phone number        |
-| Password       | NVARCHAR(100)   | Encrypted password         |
-| RoleId         | INT             | Role of the user           |
-| CreatedOn      | DATETIME        | Record creation date       |
-Tickets
-| Column            | Type            | Description                 |
-|-------------------|-----------------|-----------------------------|
-| TicketId          | INT             | Primary key                 |
-| TicketTypeId      | INT             | Type of the ticket          |
-| DepartmentId      | INT             | Department handling ticket  |
-| TicketTitle       | NVARCHAR(150)   | Title of the ticket         |
-| TicketDescription | NVARCHAR(MAX)   | Description of the ticket   |
-| StatusId          | INT             | Status of the ticket        |
-| CreatedOn         | DATETIME        | Record creation date        |
-| CreatedBy         | UNIQUEIDENTIFIER| User who created the ticket |
-| ModifiedOn        | DATETIME        | Record modification date    |
-| ModifiedBy        | UNIQUEIDENTIFIER| User who modified the ticket|
-UserProfile
-| Column      | Type            | Description                |
-|-------------|-----------------|----------------------------|
-| ProfileId   | UNIQUEIDENTIFIER| Primary key                |
-| UserId      | UNIQUEIDENTIFIER| Foreign key to Users table |
-| DisplayName | NVARCHAR(20)    | User's display name        |
-| GenderId    | INT             | User's gender              |
-| CountryId   | INT             | User's country             |
-| CreatedOn   | DATETIME        | Record creation date       |
-| CreatedBy   | UNIQUEIDENTIFIER| User who created the record|
-| ModifiedOn  | DATETIME        | Record modification date   |
-| ModifiedBy  | UNIQUEIDENTIFIER| User who modified the record|
-Agents
-| Column    | Type            | Description                |
-|-----------|-----------------|----------------------------|
-| AgentId   | UNIQUEIDENTIFIER| Primary key                |
-| UserId    | UNIQUEIDENTIFIER| Foreign key to Users table |
-| CreatedOn | DATETIME        | Record creation date       |
-| CreatedBy | UNIQUEIDENTIFIER| User who created the record|
-
+- Admins can manage Agents
+  
+**Database Schema**
 **There also other tables but not included in this file, you can find schema script uploaded in DB Scripts folder in this repo.**
 
 Stored Procedures
