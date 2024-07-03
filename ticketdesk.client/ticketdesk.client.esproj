@@ -10,8 +10,6 @@
   <ItemGroup>
     <Folder Include="src\app\service\login-services\" />
     <Folder Include="src\app\service\master-data-service\" />
-    <Folder Include="src\extensions\" />
-    <Folder Include="src\constants\" />
     <Folder Include="src\security\" />
   </ItemGroup>
 </Project>

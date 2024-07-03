@@ -2,39 +2,40 @@
 using System.Data.SqlClient;
 using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.Tickets;
+using TicketDesk.Utility.Logger;
 
 namespace TicketDesk.DAL.Domain
 {
-    public class TicketDataAccess:ITicketDataAccess
+    public class TicketDataAccess : ITicketDataAccess
     {
         private readonly string _connectionString;
+        private readonly Logger _logger;
 
-        public TicketDataAccess(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        public TicketDataAccess(string connectionString, Logger logger) =>
+            (_connectionString, _logger) = (connectionString, logger);
 
         public async Task<List<TicketsDTO>> GetAllTicketsAsync()
         {
+            _logger.LogInformation("Fetching all tickets.");
+            var tickets = new List<TicketsDTO>();
+
             try
             {
-                var tickets = new List<TicketsDTO>();
-
-                using SqlConnection conn = new(_connectionString);
-                using SqlCommand cmd = new("usp_GetAllTickets", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_GetAllTickets", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
                     tickets.Add(new TicketsDTO
                     {
                         TicketId = (Guid)reader["TicketId"],
-                        TicketTypeId = reader["TicketTypeId"] != DBNull.Value ? (int?)reader["TicketTypeId"] : null,
-                        DepartmentId = reader["DepartmentId"] != DBNull.Value ? (int?)reader["DepartmentId"] : null,
+                        TicketTypeId = reader["TicketTypeId"] as int?,
+                        DepartmentId = reader["DepartmentId"] as int?,
                         TicketTitle = reader["TicketTitle"].ToString(),
                         TicketDescription = reader["TicketDescription"].ToString(),
                         StatusId = (int)reader["StatusId"],
@@ -44,170 +45,173 @@ namespace TicketDesk.DAL.Domain
                         ModifiedBy = reader["ModifiedBy"] as Guid?
                     });
                 }
-                return tickets;
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                _logger.LogError(ex.Message, ex.StackTrace, "Error fetching all tickets");
+                throw;
             }
 
+            return tickets;
         }
 
         public async Task<List<TicketsDTO>> GetTicketsByUserAsync(Guid userId)
         {
+            _logger.LogInformation($"Fetching tickets for user ID: {userId}");
+            var tickets = new List<TicketsDTO>();
+
             try
             {
-                var tickets = new List<TicketsDTO>();
-
-                using SqlConnection conn = new(_connectionString);
-                using SqlCommand cmd = new("usp_GetTicketByUser", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_GetTicketByUser", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.Parameters.AddWithValue("@UserID", userId);
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
                     tickets.Add(new TicketsDTO
                     {
                         TicketId = (Guid)reader["TicketId"],
-                        TicketTypeId = reader["TicketTypeId"] != DBNull.Value ? (int?)reader["TicketTypeId"] : null,
-                        DepartmentId = reader["DepartmentId"] != DBNull.Value ? (int?)reader["DepartmentId"] : null,
-                        TicketTitle = reader["TicketTitle"] != DBNull.Value ? reader["TicketTitle"].ToString() : string.Empty,
-                        TicketDescription = reader["TicketDescription"] != DBNull.Value ? reader["TicketDescription"].ToString() : string.Empty,
+                        TicketTypeId = reader["TicketTypeId"] as int?,
+                        DepartmentId = reader["DepartmentId"] as int?,
+                        TicketTitle = reader["TicketTitle"].ToString(),
+                        TicketDescription = reader["TicketDescription"].ToString(),
                         StatusId = (int)reader["StatusId"],
-                        CreatedOn = reader["CreatedOn"] != DBNull.Value ? (DateTime?)reader["CreatedOn"] : null,
-                        CreatedBy = reader["CreatedBy"] != DBNull.Value ? (Guid?)reader["CreatedBy"] : null,
-                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null
+                        CreatedOn = reader["CreatedOn"] as DateTime?,
+                        CreatedBy = reader["CreatedBy"] as Guid?,
+                        ModifiedOn = reader["ModifiedOn"] as DateTime?,
+                        ModifiedBy = reader["ModifiedBy"] as Guid?
                     });
                 }
-                return tickets;
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error fetching tickets for user ID: {userId}");
+                throw;
             }
 
+            return tickets;
         }
+
         public async Task<TicketsDTO> GetTicketByIdAsync(Guid ticketId)
         {
+            _logger.LogInformation($"Fetching ticket by ID: {ticketId}");
             try
             {
-                using SqlConnection conn = new(_connectionString);
-                using SqlCommand cmd = new("usp_GetTicketById", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_GetTicketById", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 cmd.Parameters.AddWithValue("@TicketId", ticketId);
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
                     return new TicketsDTO
                     {
                         TicketId = (Guid)reader["TicketId"],
-                        TicketTypeId = reader["TicketTypeId"] != DBNull.Value ? (int?)reader["TicketTypeId"] : null,
-                        DepartmentId = reader["DepartmentId"] != DBNull.Value ? (int?)reader["DepartmentId"] : null,
+                        TicketTypeId = reader["TicketTypeId"] as int?,
+                        DepartmentId = reader["DepartmentId"] as int?,
                         TicketTitle = reader["TicketTitle"].ToString(),
                         TicketDescription = reader["TicketDescription"].ToString(),
                         StatusId = (int)reader["StatusId"],
                         CreatedOn = (DateTime)reader["CreatedOn"],
                         CreatedBy = (Guid)reader["CreatedBy"],
-                        ModifiedOn = reader["ModifiedOn"] != DBNull.Value ? (DateTime?)reader["ModifiedOn"] : null,
-                        ModifiedBy = reader["ModifiedBy"] != DBNull.Value ? (Guid?)reader["ModifiedBy"] : null
+                        ModifiedOn = reader["ModifiedOn"] as DateTime?,
+                        ModifiedBy = reader["ModifiedBy"] as Guid?
                     };
-
                 }
-                return null;
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error fetching ticket by ID: {ticketId}");
+                throw;
             }
 
+            return null;
         }
 
         public async Task<List<TicketsDTO>> GetTicketsWithAgentAsync()
         {
-            List<TicketsDTO> tickets = null;
+            _logger.LogInformation("Fetching tickets with agent information.");
+            var tickets = new List<TicketsDTO>();
+
             try
             {
-                tickets = new List<TicketsDTO>();
-                using (var connection = new SqlConnection(_connectionString))
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_GetTicketsWithAgent", conn)
                 {
-                    using (var command = new SqlCommand("usp_GetTicketsWithAgent", connection))
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                await conn.OpenAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    tickets.Add(new TicketsDTO
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        await connection.OpenAsync();
-
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            while (await reader.ReadAsync())
-                            {
-                                tickets.Add(new TicketsDTO
-                                {
-                                    TicketId = reader.GetGuid(reader.GetOrdinal("TicketId")),
-                                    TicketTitle = reader.GetString(reader.GetOrdinal("TicketTitle")),
-                                    TicketDescription = reader.GetString(reader.GetOrdinal("TicketDescription")),
-                                    StatusId = reader.GetInt32(reader.GetOrdinal("StatusId")),
-                                    AgentId = reader.GetGuid(reader.GetOrdinal("AgentId")),
-                                    AgentName = reader.GetString(reader.GetOrdinal("AgentName"))
-                                });
-                            }
-                        }
-                    }
+                        TicketId = (Guid)reader["TicketId"],
+                        TicketTitle = reader["TicketTitle"].ToString(),
+                        TicketDescription = reader["TicketDescription"].ToString(),
+                        StatusId = (int)reader["StatusId"],
+                        AgentId = (Guid)reader["AgentId"],
+                        AgentName = reader["AgentName"].ToString()
+                    });
                 }
-                return tickets;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError(ex.Message, ex.StackTrace, "Error fetching tickets with agent information");
                 throw;
             }
 
+            return tickets;
         }
 
         public async Task<bool> CreateTicketAsync(TicketsDTO ticket)
         {
+            _logger.LogInformation("Creating new ticket.");
             try
             {
-                using SqlConnection conn = new(_connectionString);
-                using SqlCommand cmd = new("usp_CreateTicket", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_CreateTicket", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
+
                 cmd.Parameters.AddWithValue("@TicketTitle", ticket.TicketTitle);
                 cmd.Parameters.AddWithValue("@TicketDescription", ticket.TicketDescription);
                 cmd.Parameters.AddWithValue("@StatusId", ticket.StatusId);
                 cmd.Parameters.AddWithValue("@UserId", ticket.CreatedBy);
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
                 return reader.Read() && reader.GetInt32(0) > 0;
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                _logger.LogError(ex.Message, ex.StackTrace, "Error creating ticket");
+                throw;
             }
-
         }
+
         public async Task<bool> UpdateTicketAsync(TicketsDTO ticket)
         {
+            _logger.LogInformation($"Updating ticket ID: {ticket.TicketId}");
             try
             {
-                using SqlConnection conn = new(_connectionString);
-                using SqlCommand cmd = new("usp_UpdateTicket", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_UpdateTicket", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
+
                 cmd.Parameters.AddWithValue("@TicketId", ticket.TicketId);
                 cmd.Parameters.AddWithValue("@TicketTitle", ticket.TicketTitle);
                 cmd.Parameters.AddWithValue("@TicketDescription", ticket.TicketDescription);
@@ -215,21 +219,23 @@ namespace TicketDesk.DAL.Domain
                 cmd.Parameters.AddWithValue("@UserId", ticket.CreatedBy);
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-                var result = reader.Read() && reader.GetInt32(0) > 0;
-                return result;
+                using var reader = await cmd.ExecuteReaderAsync();
+                return reader.Read() && reader.GetInt32(0) > 0;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error updating ticket ID: {ticket.TicketId}");
                 throw;
             }
         }
+
         public async Task<bool> DeleteTicketAsync(Guid ticketId)
         {
+            _logger.LogInformation($"Deleting ticket ID: {ticketId}");
             try
             {
-                using SqlConnection conn = new(_connectionString);
-                using SqlCommand cmd = new("usp_DeleteTicket", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_DeleteTicket", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -237,14 +243,13 @@ namespace TicketDesk.DAL.Domain
 
                 await conn.OpenAsync();
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                return rowsAffected > -2;
+                return rowsAffected > 0;
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error deleting ticket ID: {ticketId}");
                 throw;
             }
         }
-
     }
 }

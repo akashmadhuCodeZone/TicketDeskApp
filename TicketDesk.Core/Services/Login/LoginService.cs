@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using TicketDesk.Core.Interfaces.Login;
-using TicketDesk.DAL.Domain;
 using TicketDesk.DAL.Repository;
-using TicketDesk.DTO;
 using TicketDesk.DTO.Login;
-
 
 namespace TicketDesk.Core.Services.Login
 {
@@ -13,23 +10,10 @@ namespace TicketDesk.Core.Services.Login
         private readonly IConfiguration _configuration;
         private readonly ILoginDataAccess _loginDataAccess;
 
-        public LoginService(IConfiguration configuration,ILoginDataAccess loginDataAccess)
-        {
-            _configuration = configuration;
-            _loginDataAccess = loginDataAccess;
-        }
+        public LoginService(IConfiguration configuration, ILoginDataAccess loginDataAccess) =>
+            (_configuration, _loginDataAccess) = (configuration, loginDataAccess);
 
-        public async Task<LoginResponseDTO> LoginAsync(LoginDTO login)
-        {
-            try
-            {
-                return await  _loginDataAccess.ValidateUserAsync(login);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-        }
+        public Task<LoginResponseDTO> LoginAsync(LoginDTO login) =>
+            _loginDataAccess.ValidateUserAsync(login);
     }
 }

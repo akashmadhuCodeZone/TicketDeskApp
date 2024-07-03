@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AgentService } from '../../../service/agent-services/agent.service';
@@ -130,11 +129,11 @@ export class TicketManagerComponent implements OnInit {
       const ticket = await this.ticketService.getTicketById(ticketId);
       console.log("ticket", ticket)
       this.ticketForm.patchValue({
-        ticketId: ticket.ticketId,
-        ticketTitle: ticket.ticketTitle,
-        ticketDescription: ticket.ticketDescription,
-        statusId: ticket.statusId,
-        agentId: ticket.agentId
+        ticketId: ticket?.ticketId,
+        ticketTitle: ticket?.ticketTitle,
+        ticketDescription: ticket?.ticketDescription,
+        statusId: ticket?.statusId,
+        agentId: ticket?.agentId
       });
       this.displayDialog = true;
     } catch (error) {

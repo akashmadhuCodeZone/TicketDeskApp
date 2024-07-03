@@ -9,103 +9,30 @@ namespace TicketDesk.Core.Services.Agent
     {
         private readonly IAgentDataAccess _agentDataAccess;
 
-        public AgentService(IAgentDataAccess agentDataAccess)
-        {
-            _agentDataAccess = agentDataAccess;
-        }
+        public AgentService(IAgentDataAccess agentDataAccess) => _agentDataAccess = agentDataAccess;
 
-        public async Task<IEnumerable<AgentDTO>> GetAllAgentsAsync()
-        {
-            try
-            {
+        public Task<IEnumerable<AgentDTO>> GetAllAgentsAsync() =>
+            _agentDataAccess.GetAllAgentsAsync();
 
-                return await _agentDataAccess.GetAllAgentsAsync();
-            }
-            catch (Exception)
-            {
+        public Task<AgentDTO> GetAgentByIdAsync(Guid agentId) =>
+            _agentDataAccess.GetAgentByIdAsync(agentId);
 
-                throw;
-            }
-        }
+        public Task<bool> CreateAgentAsync(AgentDTO agentDTO) =>
+            _agentDataAccess.CreateAgentAsync(agentDTO);
 
-        public async Task<AgentDTO> GetAgentByIdAsync(Guid agentId)
-        {
-            try
-            {
-                return await _agentDataAccess.GetAgentByIdAsync(agentId);
+        public Task<bool> UpdateAgentAsync(AgentDTO agentDTO) =>
+            _agentDataAccess.UpdateAgentAsync(agentDTO);
 
-            }
-            catch (Exception)
-            {
+        public Task<bool> DeleteAgentAsync(Guid agentId) =>
+            _agentDataAccess.DeleteAgentAsync(agentId);
 
-                throw;
-            }
-        }
+        public Task<(IEnumerable<AgentDTO> Data, int TotalRecords)> GetAgentsPaginatedAsync(int page, int size) =>
+            _agentDataAccess.GetAgentsPaginatedAsync(page, size);
 
-        public async Task<bool> CreateAgentAsync(AgentDTO agentDTO)
-        {
-            try
-            {
-                return await _agentDataAccess.CreateAgentAsync(agentDTO);
+        public Task<bool> InsertAgentTicketMappingAsync(Guid agentId, Guid ticketId, Guid createdBy) =>
+            _agentDataAccess.InsertAgentTicketMappingAsync(agentId, ticketId, createdBy);
 
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<bool> UpdateAgentAsync(AgentDTO agentDTO)
-        {
-            try
-            {
-
-                return await _agentDataAccess.UpdateAgentAsync(agentDTO);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<bool> DeleteAgentAsync(Guid agentId)
-        {
-            try
-            {
-
-                return await _agentDataAccess.DeleteAgentAsync(agentId);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<(IEnumerable<AgentDTO> Data, int TotalRecords)> GetAgentsPaginatedAsync(int page, int size)
-        {
-            try
-            {
-
-                return await _agentDataAccess.GetAgentsPaginatedAsync(page, size);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<bool> InsertAgentTicketMappingAsync(Guid agentId, Guid ticketId, Guid createdBy)
-        {
-            return await _agentDataAccess.InsertAgentTicketMappingAsync(agentId, ticketId, createdBy);
-        }
-
-        public async Task<IEnumerable<TicketsDTO>> GetTicketsByAgentAsync(Guid agentId)
-        {
-            return await _agentDataAccess.GetTicketsByAgentAsync(agentId);
-        }
+        public Task<IEnumerable<TicketsDTO>> GetTicketsByAgentAsync(Guid agentId) =>
+            _agentDataAccess.GetTicketsByAgentAsync(agentId);
     }
 }

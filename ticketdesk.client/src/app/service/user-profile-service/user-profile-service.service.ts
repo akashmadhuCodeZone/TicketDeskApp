@@ -1,46 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { UserProfileDTO } from '../../../model/UserProfileDTO';
+import { ExtensionService } from '../extensions.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
-  private apiUrl = 'https://localhost:7290/api';
+  private apiUrl = 'https://localhost:7290/api/userprofile';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private extension:ExtensionService) { }
 
-  private createHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      throw new Error('No token found');
-    }
-
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
-  async getUserProfile(userId: string | null): Promise<UserProfileDTO> {
+  async getUserProfile(userId: string | null): Promise<UserProfileDTO | null> {
     if (!userId) {
       throw new Error('No user ID provided');
     }
-
     try {
-      const headers = this.createHeaders();
-
-      console.log('Headers:', headers);
-
-      const response = await firstValueFrom(this.http.get<UserProfileDTO>(`${this.apiUrl}/userprofile/${userId}`, { headers }));
-      return response;
+      const headers = this.extension.createHeaders();
+      return await firstValueFrom(this.http.get<UserProfileDTO>(`${this.apiUrl}/${userId}`, { headers }));
     } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        console.error('Error fetching user profile:', error.message);
-      }
-      throw error;
+      this.extension.handleError(error);
+      return null;
     }
   }
 
@@ -48,17 +29,12 @@ export class UserProfileService {
     if (!profileId || !userId) {
       throw new Error('Profile ID and/or User ID not provided');
     }
-
     try {
-      const headers = this.createHeaders();
-
-      console.log('Headers:', headers);
-      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/userprofile/${profileId}/${userId}`, userProfile, { headers }));
+      const headers = this.extension.createHeaders();
+      await firstValueFrom(this.http.put<{ message: string }>(`${this.apiUrl}/${profileId}/${userId}`, userProfile, { headers }));
     } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        console.error('Error updating user profile:', error.message);
-      }
-      throw error;
+      this.extension.handleError(error);
     }
   }
+
 }

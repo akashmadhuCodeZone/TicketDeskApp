@@ -2,20 +2,21 @@
 using System.Data.SqlClient;
 using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.MasterData;
+using TicketDesk.Utility.Logger;
 
 namespace TicketDesk.DAL.Domain
 {
-    public class MasterDataAccess:IMasterDataAccess
+    public class MasterDataAccess : IMasterDataAccess
     {
         private readonly string _connectionString;
+        private readonly Logger _logger;
 
-        public MasterDataAccess(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        public MasterDataAccess(string connectionString, Logger logger) =>
+            (_connectionString, _logger) = (connectionString, logger);
 
         public async Task<MasterDataDTO> GetAllMasterDataAsync()
         {
+            _logger.LogInformation("Fetching all master data.");
             var masterData = new MasterDataDTO
             {
                 Countries = new List<MasterDataDTO.CountryDto>(),
@@ -26,26 +27,34 @@ namespace TicketDesk.DAL.Domain
                 TicketTypes = new List<MasterDataDTO.TicketTypeDto>()
             };
 
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-            using var command = new SqlCommand("usp_GetMasterData", connection)
+            try
             {
-                CommandType = CommandType.StoredProcedure
-            };
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("usp_GetMasterData", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
 
-            using var reader = await command.ExecuteReaderAsync();
+                await connection.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
 
-            masterData.Countries = await ReadMasterDataAsync<MasterDataDTO.CountryDto>(reader);
-            await reader.NextResultAsync();
-            masterData.Genders = await ReadMasterDataAsync<MasterDataDTO.GenderDto>(reader);
-            await reader.NextResultAsync();
-            masterData.Departments = await ReadMasterDataAsync<MasterDataDTO.DepartmentDto>(reader);
-            await reader.NextResultAsync();
-            masterData.Roles = await ReadMasterDataAsync<MasterDataDTO.RoleDto>(reader);
-            await reader.NextResultAsync();
-            masterData.Statuses = await ReadMasterDataAsync<MasterDataDTO.StatusDto>(reader);
-            await reader.NextResultAsync();
-            masterData.TicketTypes = await ReadMasterDataAsync<MasterDataDTO.TicketTypeDto>(reader);
+                masterData.Countries = await ReadMasterDataAsync<MasterDataDTO.CountryDto>(reader);
+                await reader.NextResultAsync();
+                masterData.Genders = await ReadMasterDataAsync<MasterDataDTO.GenderDto>(reader);
+                await reader.NextResultAsync();
+                masterData.Departments = await ReadMasterDataAsync<MasterDataDTO.DepartmentDto>(reader);
+                await reader.NextResultAsync();
+                masterData.Roles = await ReadMasterDataAsync<MasterDataDTO.RoleDto>(reader);
+                await reader.NextResultAsync();
+                masterData.Statuses = await ReadMasterDataAsync<MasterDataDTO.StatusDto>(reader);
+                await reader.NextResultAsync();
+                masterData.TicketTypes = await ReadMasterDataAsync<MasterDataDTO.TicketTypeDto>(reader);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex.StackTrace, "Error fetching master data");
+                throw;
+            }
 
             return masterData;
         }

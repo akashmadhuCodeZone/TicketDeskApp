@@ -23,7 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { FooterComponent } from './components/footer/footer.component';
-import { AuthInterceptor } from './service/auth.interceptor';
+import { AuthInterceptor } from './service/auth.interceptor'; // Ensure this import is correct
 
 export function tokenGetter() {
   return localStorage.getItem('token');

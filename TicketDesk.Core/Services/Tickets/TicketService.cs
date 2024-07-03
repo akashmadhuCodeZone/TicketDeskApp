@@ -1,5 +1,7 @@
-﻿using TicketDesk.Core.Interfaces.Tickets;
-using TicketDesk.DAL.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TicketDesk.Core.Interfaces.Tickets;
 using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.Tickets;
 
@@ -8,91 +10,29 @@ namespace TicketDesk.Core.Services.Tickets
     public class TicketService : ITicketService
     {
         private readonly ITicketDataAccess _ticketDataAccess;
-        public TicketService(ITicketDataAccess ticketDataAccess)
-        {
+
+        public TicketService(ITicketDataAccess ticketDataAccess) =>
             _ticketDataAccess = ticketDataAccess;
-        }
 
-        public async Task<bool> CreateTicketAsync(TicketsDTO ticket)
-        {
-            try
-            {
-                return await _ticketDataAccess.CreateTicketAsync(ticket);
-            }
-            catch (Exception)
-            {
+        public Task<bool> CreateTicketAsync(TicketsDTO ticket) =>
+            _ticketDataAccess.CreateTicketAsync(ticket);
 
-                throw;
-            }
-        }
+        public Task<bool> DeleteTicketAsync(Guid ticketId) =>
+            _ticketDataAccess.DeleteTicketAsync(ticketId);
 
-        public async Task<bool> DeleteTicketAsync(Guid ticketId)
-        {
-            try
-            {
-                return await _ticketDataAccess.DeleteTicketAsync(ticketId);
-            }
-            catch (Exception)
-            {
+        public Task<List<TicketsDTO>> GetAllTicketsAsync() =>
+            _ticketDataAccess.GetAllTicketsAsync();
 
-                throw;
-            }
-        }
+        public Task<List<TicketsDTO>> GetTicketsWithAgentAsync() =>
+            _ticketDataAccess.GetTicketsWithAgentAsync();
 
-        public async Task<List<TicketsDTO>> GetAllTicketsAsync()
-        {
-            try
-            {
-                return await _ticketDataAccess.GetAllTicketsAsync();
-            }
-            catch (Exception)
-            {
+        public Task<List<TicketsDTO>> GetTicketsByUserAsync(Guid userId) =>
+            _ticketDataAccess.GetTicketsByUserAsync(userId);
 
-                throw;
-            }
-        }
-        public async Task<List<TicketsDTO>> GetTicketsWithAgentAsync()
-        {
-            return await _ticketDataAccess.GetTicketsWithAgentAsync();
-        }
+        public Task<TicketsDTO> GetTicketByIdAsync(Guid ticketId) =>
+            _ticketDataAccess.GetTicketByIdAsync(ticketId);
 
-        public async Task<List<TicketsDTO>> GetTicketsByUserAsync(Guid userId)
-        {
-            try
-            {
-                return await _ticketDataAccess.GetTicketsByUserAsync(userId);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<TicketsDTO> GetTicketByIdAsync(Guid ticketId)
-        {
-            try
-            {
-                return await _ticketDataAccess.GetTicketByIdAsync(ticketId);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<bool> UpdateTicketAsync(TicketsDTO ticket)
-        {
-            try
-            {
-                return await _ticketDataAccess.UpdateTicketAsync(ticket);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        public Task<bool> UpdateTicketAsync(TicketsDTO ticket) =>
+            _ticketDataAccess.UpdateTicketAsync(ticket);
     }
 }

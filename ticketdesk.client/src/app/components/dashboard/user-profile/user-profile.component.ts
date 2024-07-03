@@ -4,6 +4,7 @@ import { UserProfileService } from '../../../service/user-profile-service/user-p
 import { UserProfileDTO } from '../../../../model/UserProfileDTO';
 import { MasterDataService } from '../../../service/master-data-service/master-data.service';
 import { CountryDto, GenderDto } from '../../../../model/MasterDataDTO';
+import { ExtensionService } from '../../../service/extensions.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -20,10 +21,22 @@ export class UserProfileComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private masterDataService: MasterDataService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private extensionService: ExtensionService
   ) { }
 
   async ngOnInit(): Promise<void> {
+    this.initForm();
+
+    try {
+      await this.loadMasterData();
+      await this.loadUserProfile();
+    } catch (error) {
+      this.handleError(error, 'Failed to load data');
+    }
+  }
+
+  private initForm(): void {
     this.userProfileForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -32,19 +45,22 @@ export class UserProfileComponent implements OnInit {
       countryId: [null, Validators.required],
       emailAddress: [{ value: '', disabled: true }, [Validators.required, Validators.email]]
     });
+  }
 
-    try {
-      const masterData = await this.masterDataService.getAllMasterData();
-      this.genders = masterData.genders;
-      this.countries = masterData.countries;
+  private async loadMasterData(): Promise<void> {
+    const masterData = await this.masterDataService.getAllMasterData();
+    this.genders = masterData.genders;
+    this.countries = masterData.countries;
+  }
 
-      const userId = localStorage.getItem('userId'); // Replace with actual user ID logic
-      const userProfile = await this.userProfileService.getUserProfile(userId);
-      localStorage.setItem('profileId',userProfile.profileId)
+  private async loadUserProfile(): Promise<void> {
+    const userId = this.extensionService.getUserId();
+    const userProfile = await this.userProfileService.getUserProfile(userId);
+    if (userProfile) {
+      localStorage.setItem('profileId', userProfile.profileId);
       this.userProfileForm.patchValue(userProfile);
-    } catch (error) {
-      console.error('Error loading master data or user profile', error);
-      this.errorMessage = 'Failed to load data';
+    } else {
+      this.handleError('User profile not found', 'Failed to load user profile');
     }
   }
 
@@ -52,7 +68,7 @@ export class UserProfileComponent implements OnInit {
     return this.userProfileForm.controls;
   }
 
-  async onSubmit() {
+  async onSubmit(): Promise<void> {
     this.submitted = true;
 
     if (this.userProfileForm.invalid) {
@@ -62,14 +78,20 @@ export class UserProfileComponent implements OnInit {
     try {
       const userProfile: UserProfileDTO = this.userProfileForm.getRawValue();
       const profileId = localStorage.getItem('profileId');
-      const userId = localStorage.getItem('userId');
-      console.log('userId', userId)
-      console.log('profileId', profileId)
-      await this.userProfileService.updateUserProfile(profileId, userId, userProfile);
-      console.log('User profile updated successfully');
+      const userId = this.extensionService.getUserId();
+      if (profileId && userId) {
+        await this.userProfileService.updateUserProfile(profileId, userId, userProfile);
+        console.log('User profile updated successfully');
+      } else {
+        this.handleError('Profile ID or User ID is missing', 'Failed to update user profile');
+      }
     } catch (error) {
-      console.error('Update error:', error);
-      this.errorMessage = 'Failed to update user profile';
+      this.handleError(error, 'Failed to update user profile');
     }
+  }
+
+  private handleError(error: unknown, message: string): void {
+    console.error('Error:', error);
+    this.errorMessage = message;
   }
 }

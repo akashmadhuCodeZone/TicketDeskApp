@@ -2,33 +2,33 @@
 using System.Data.SqlClient;
 using TicketDesk.DAL.Repository;
 using TicketDesk.DTO.UserProfile;
+using TicketDesk.Utility.Logger;
 
 namespace TicketDesk.DAL.Domain
 {
-    public class UserProfileDataAccess:IUserProfileDataAccess
+    public class UserProfileDataAccess : IUserProfileDataAccess
     {
         private readonly string _connectionString;
+        private readonly Logger _logger;
 
-        public UserProfileDataAccess(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        public UserProfileDataAccess(string connectionString, Logger logger) =>
+            (_connectionString, _logger) = (connectionString, logger);
 
         public async Task<UserProfileDTO> GetUserProfileAsync(Guid userId)
         {
-            using SqlConnection conn = new SqlConnection(_connectionString);
+            _logger.LogInformation($"Fetching user profile for user ID: {userId}");
             try
             {
-                using SqlCommand cmd = new SqlCommand("usp_GetUserProfile", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_GetUserProfile", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
                 cmd.Parameters.AddWithValue("@UserId", userId);
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-                if (reader.Read())
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
                     return new UserProfileDTO
                     {
@@ -40,38 +40,32 @@ namespace TicketDesk.DAL.Domain
                         FirstName = reader["FirstName"]?.ToString(),
                         LastName = reader["LastName"]?.ToString(),
                         EmailAddress = reader["EmailAddress"]?.ToString(),
-                        PhoneNumber = (long)reader["PhoneNumber"],
-
-
+                        PhoneNumber = (long)reader["PhoneNumber"]
                     };
                 }
-                return null;
             }
             catch (Exception ex)
             {
-                // Optionally: Add logging here
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error fetching user profile for user ID: {userId}");
                 throw;
             }
-            finally
-            {
-                await conn.CloseAsync();
-            }
+            return null;
         }
 
         public async Task<UserProfileDTO> GetUserProfileByUserIdAsync(Guid userId)
         {
-            using SqlConnection conn = new SqlConnection(_connectionString);
+            _logger.LogInformation($"Fetching user profile by user ID: {userId}");
             try
             {
-                using SqlCommand cmd = new SqlCommand("usp_GetUserProfileByUserId", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_GetUserProfileByUserId", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-
                 cmd.Parameters.AddWithValue("@UserId", userId);
 
                 await conn.OpenAsync();
-                using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {
                     return new UserProfileDTO
@@ -87,25 +81,22 @@ namespace TicketDesk.DAL.Domain
                         ModifiedBy = reader["ModifiedBy"] as Guid?
                     };
                 }
-                return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Optionally: Add logging here
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error fetching user profile by user ID: {userId}");
                 throw;
             }
-            finally
-            {
-                await conn.CloseAsync();
-            }
+            return null;
         }
 
         public async Task<bool> UpdateUserProfileAsync(UserProfileDTO profile)
         {
-            using SqlConnection conn = new SqlConnection(_connectionString);
+            _logger.LogInformation($"Updating user profile ID: {profile.ProfileId}");
             try
             {
-                using SqlCommand cmd = new SqlCommand("usp_UpdateUserProfile", conn)
+                using var conn = new SqlConnection(_connectionString);
+                using var cmd = new SqlCommand("usp_UpdateUserProfile", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
@@ -124,16 +115,11 @@ namespace TicketDesk.DAL.Domain
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 return rowsAffected > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Optionally: Add logging here
+                _logger.LogError(ex.Message, ex.StackTrace, $"Error updating user profile ID: {profile.ProfileId}");
                 throw;
             }
-            finally
-            {
-                await conn.CloseAsync();
-            }
         }
-
     }
 }

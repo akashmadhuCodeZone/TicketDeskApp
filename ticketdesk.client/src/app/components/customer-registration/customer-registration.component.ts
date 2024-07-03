@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomerService } from '../../service/customer-services/customer.service';
 import { CustomerDTO } from '../../../model/CustomerDTO';
 import { Router } from '@angular/router';
+import { ExtensionService } from '../../service/extensions.service';
 
 @Component({
   selector: 'app-customer-registration',
@@ -17,7 +18,8 @@ export class CustomerRegistrationComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private customerService: CustomerService,
-    private router: Router
+    private router: Router,
+    private extension: ExtensionService
   ) { }
 
   ngOnInit(): void {
@@ -51,28 +53,20 @@ export class CustomerRegistrationComponent implements OnInit {
     this.customerForm.get('user.roleId')?.enable();
 
     const customerDTO: CustomerDTO = this.customerForm.getRawValue();
-    customerDTO.user.userId = this.generateUUID(); 
-    customerDTO.customerId = this.generateUUID(); 
+    customerDTO.user.userId = this.extension.generateUUID();
+    customerDTO.customerId = this.extension.generateUUID();
 
-    
     this.customerForm.get('customerId')?.disable();
     this.customerForm.get('user.userId')?.disable();
     this.customerForm.get('user.roleId')?.disable();
 
     try {
-      const response = await this.customerService.registerCustomer(customerDTO);
-      console.log('Customer registered successfully:', response);
+      await this.customerService.registerCustomer(customerDTO);
+      console.log('Customer registered successfully');
       this.router.navigate(['dashboard/user-profile']);  // Navigate to user profile after registration
     } catch (error) {
       console.error('Registration error:', error);
       this.errorMessage = 'Failed to register customer';
     }
-  }
-
-  generateUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
   }
 }

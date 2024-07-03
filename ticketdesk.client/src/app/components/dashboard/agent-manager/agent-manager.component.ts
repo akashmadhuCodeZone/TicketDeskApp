@@ -106,12 +106,12 @@ export class AgentManagerComponent implements OnInit {
     try {
       const agent = await this.agentService.getAgentById(agentId);
       this.agentForm.patchValue({
-        agentId: agent.agentId,
-        firstName: agent.user.firstName,
-        lastName: agent.user.lastName,
-        phoneNumber: agent.user.phoneNumber,
-        emailAddress: agent.user.emailAddress,
-        password: agent.user.password
+        agentId: agent?.agentId,
+        firstName: agent?.user.firstName,
+        lastName: agent?.user.lastName,
+        phoneNumber: agent?.user.phoneNumber,
+        emailAddress: agent?.user.emailAddress,
+        password: agent?.user.password
       });
       this.displayDialog = true;
     } catch (error) {

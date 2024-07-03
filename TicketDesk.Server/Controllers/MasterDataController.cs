@@ -12,10 +12,8 @@ namespace TicketDesk.Server.Controllers
     public class MasterDataController : ControllerBase
     {
         private readonly IMasterDataService _masterDataService;
-        public MasterDataController(IMasterDataService masterDataService)
-        {
-            _masterDataService = masterDataService;
-        }
+        public MasterDataController(IMasterDataService masterDataService) => _masterDataService = masterDataService;
+        
 
         [HttpGet]
         public async Task<IActionResult> Get() => 

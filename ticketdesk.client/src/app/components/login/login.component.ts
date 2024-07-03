@@ -10,7 +10,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent  {
+export class LoginComponent {
   loginForm: FormGroup;
   submitted = false;
   errorMessage: string | null = null;
@@ -27,13 +27,11 @@ export class LoginComponent  {
     });
   }
 
-  
-
   get f() {
     return this.loginForm.controls;
   }
 
-  async onSubmit() {
+  async onSubmit(): Promise<void> {
     this.submitted = true;
 
     if (this.loginForm.invalid) {
@@ -46,19 +44,18 @@ export class LoginComponent  {
     };
 
     try {
-      console.log('Submitting login form:', loginDTO);
+      console.log('Submitting login form');
       const response = await this.authService.login(loginDTO);
-      console.log('Login response:', response);
+      console.log('Login response received');
 
       if (response && response.token) {
         const decodedToken = this.jwtHelper.decodeToken(response.token);
+
         const email = decodedToken.email;
         const role = decodedToken.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         const userId = decodedToken.sub;
 
-        console.log('Decoded JWT Email:', email);
-        console.log('Decoded JWT Role:', role);
-        console.log('Decoded JWT UserId:', userId);
+        console.log('Login successful');
 
         localStorage.setItem('token', response.token);
         localStorage.setItem('email', email);
@@ -66,9 +63,13 @@ export class LoginComponent  {
         localStorage.setItem('userId', userId);
 
         this.router.navigate(['dashboard/user-profile']);
+      } else {
+        this.errorMessage = 'Invalid login response';
+        console.error('Login response error: Invalid token');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error('Login error:', error.message || error);
       this.errorMessage = 'Invalid email or password';
     }
   }

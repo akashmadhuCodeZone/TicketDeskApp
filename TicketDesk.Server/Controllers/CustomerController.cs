@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketDesk.Core.Interfaces.Registeration;
 using TicketDesk.DTO.Customer;
-using TicketDesk.DTO.User;
 
 namespace TicketDesk.Server.Controllers
 {
@@ -9,23 +8,13 @@ namespace TicketDesk.Server.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly IRegisterationService _registerationService;
+        private readonly IRegisterationService _registrationService;
 
-        public CustomerController(IRegisterationService registerationService)
-        {
-            _registerationService = registerationService;
-        }
+        public CustomerController(IRegisterationService registrationService) => _registrationService = registrationService;
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] CustomerDTO customerDTO)
-        {
-            return customerDTO == null ? BadRequest("Invalid user registration data.") :
-            (await _registerationService.RegisterUserAsync(customerDTO) is var response) ?
-            Ok(response) :
-            BadRequest(response);
-        }
-
-
-
+        public async Task<IActionResult> Register([FromBody] CustomerDTO customerDTO) =>
+             this.ValidateDto(customerDTO) ?? await this.ExecuteAsync(async () => 
+             await _registrationService.RegisterUserAsync(customerDTO), errorMessage: "Registration failed.");
     }
 }
